@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cart — VoltEdge</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<style>
+:root{
+  --blue:#0a235a;--blue-mid:#1a3a7a;--blue-light:#e8eef8;--blue-pale:#f0f4fc;
+  --black:#000000;--off-black:#0f0f0f;--white:#ffffff;
+  --grey-light:#f5f7fa;--grey-mid:#eaeef2;--text-muted:#3a3a3a;
+  --success:#16a34a;--danger:#dc2626;
+  --shadow-sm:0 1px 4px rgba(10,35,90,.06);
+  --shadow-md:0 6px 24px rgba(10,35,90,.12);
+  --shadow-lg:0 18px 48px rgba(10,35,90,.18);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--grey-light);color:var(--black);min-height:100vh;}
+a{text-decoration:none;color:inherit;}
+button{font-family:'DM Sans',sans-serif;cursor:pointer;}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 4%;background:rgba(255,255,255,0.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--grey-mid);transition:padding 0.3s;gap:.6rem;}
+.nav-logo{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:600;color:var(--blue);text-decoration:none;letter-spacing:-0.01em;white-space:nowrap;flex-shrink:0;}
+.nav-logo span{color:var(--black);}
+.nav-links{display:flex;gap:2rem;list-style:none;}
+.nav-links a{text-decoration:none;color:var(--off-black);font-size:0.9rem;font-weight:450;transition:color 0.2s;position:relative;}
+.nav-links a::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:1.5px;background:var(--blue);transition:width 0.2s;}
+.nav-links a:hover{color:var(--blue);}
+.nav-links a:hover::after{width:100%;}
+.nav-cta{background:var(--blue);color:var(--white);border:none;padding:0.5rem 1.3rem;border-radius:40px;font-size:0.8rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.2s,transform 0.15s;text-decoration:none;white-space:nowrap;}
+.nav-cta:hover{background:var(--blue-mid);transform:translateY(-1px);}
+.nav-right-area{display:flex;align-items:center;gap:.7rem;flex-shrink:0;}
+
+/* Hamburger */
+.hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;background:none;border:none;cursor:pointer;padding:.3rem;flex-shrink:0;}
+.hamburger span{display:block;width:22px;height:2px;background:var(--blue);border-radius:2px;transition:all .25s;}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+.mobile-nav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:99;opacity:0;pointer-events:none;transition:opacity .25s;}
+.mobile-nav-overlay.open{opacity:1;pointer-events:all;}
+.mobile-nav-drawer{position:absolute;top:0;right:0;width:min(270px,82vw);height:100%;background:#fff;padding:5rem 1.5rem 2rem;display:flex;flex-direction:column;gap:.3rem;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);box-shadow:-4px 0 24px rgba(0,0,0,.1);}
+.mobile-nav-overlay.open .mobile-nav-drawer{transform:translateX(0);}
+.mobile-nav-drawer a{padding:.6rem .85rem;border-radius:10px;font-size:.92rem;color:var(--off-black);font-weight:500;}
+.mobile-nav-drawer a:hover{background:var(--grey-light);color:var(--blue);}
+
+@media(max-width:800px){
+  .nav-links{display:none;}
+  .hamburger{display:flex;}
+  .mobile-nav-overlay{display:block;}
+}
+
+/* ── PAGE HERO ── */
+.page-hero{margin-top:64px;background:var(--blue);padding:2.5rem 4% 2rem;color:#fff;position:relative;overflow:hidden;}
+.page-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at top right,rgba(91,141,238,.3) 0%,transparent 60%);pointer-events:none;}
+.breadcrumb{font-size:.75rem;color:rgba(255,255,255,.45);margin-bottom:.8rem;}
+.breadcrumb a{color:rgba(255,255,255,.6);}
+.breadcrumb a:hover{color:#fff;}
+.page-hero h1{font-family:'Playfair Display',serif;font-size:clamp(1.4rem,3vw,2rem);font-weight:500;}
+.page-hero p{color:rgba(255,255,255,.5);margin-top:.4rem;font-size:.88rem;font-weight:300;}
+
+/* ── PAGE BODY ── */
+.page-body{max-width:1100px;margin:2rem auto;padding:0 4%;display:grid;grid-template-columns:1fr 300px;gap:1.5rem;align-items:start;}
+
+/* ── STATES ── */
+.loading-wrap{display:flex;align-items:center;gap:.8rem;color:var(--text-muted);padding:4rem;justify-content:center;grid-column:1/-1;}
+.spinner{width:20px;height:20px;border:2px solid var(--grey-mid);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.error-bar{background:#fef2f2;border:1px solid #fecaca;color:var(--danger);padding:.9rem 1.2rem;border-radius:14px;grid-column:1/-1;font-size:.88rem;display:none;}
+.error-bar.show{display:block;}
+.empty-card{background:#fff;border-radius:22px;padding:4rem 2rem;text-align:center;grid-column:1/-1;box-shadow:var(--shadow-sm);border:1px solid var(--grey-mid);display:none;}
+.empty-card .empty-ico{font-size:3rem;margin-bottom:.8rem;}
+.empty-card h3{font-family:'Playfair Display',serif;font-size:1.3rem;margin-bottom:.4rem;}
+.empty-card p{color:var(--text-muted);font-size:.88rem;margin-bottom:1.2rem;}
+.empty-card a{display:inline-block;background:var(--blue);color:#fff;padding:.65rem 1.6rem;border-radius:40px;font-size:.84rem;font-weight:600;transition:background .2s;}
+.empty-card a:hover{background:var(--blue-mid);}
+
+/* ── CART CARD ── */
+.cart-card{background:#fff;border-radius:22px;overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid var(--grey-mid);}
+.cart-card-header{background:linear-gradient(135deg,var(--blue) 0%,#1e4ab5 100%);padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;}
+.cart-card-header h2{font-size:.88rem;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.06em;}
+.item-count-badge{background:rgba(255,255,255,.18);color:#fff;font-size:.7rem;font-weight:700;padding:.2rem .65rem;border-radius:20px;border:1px solid rgba(255,255,255,.2);}
+
+/* Desktop table */
+table{width:100%;border-collapse:collapse;}
+thead th{background:var(--grey-light);padding:.75rem 1rem;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);text-align:left;border-bottom:1px solid var(--grey-mid);}
+tbody tr{border-bottom:1px solid var(--grey-mid);transition:background .15s;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:#fafbfd;}
+td{padding:.9rem 1rem;font-size:.88rem;vertical-align:middle;}
+.product-cell{display:flex;align-items:center;gap:.8rem;}
+.product-thumb{width:50px;height:50px;border-radius:10px;object-fit:cover;border:1px solid var(--grey-mid);flex-shrink:0;}
+.product-thumb-ph{width:50px;height:50px;border-radius:10px;background:var(--blue-pale);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+.product-name{font-weight:700;font-size:.88rem;line-height:1.3;}
+.product-cat{font-size:.68rem;color:var(--text-muted);margin-top:.1rem;}
+.price-cell{font-weight:600;color:var(--blue);}
+.sub-cell{font-weight:700;color:var(--black);}
+.qty-wrap{display:flex;align-items:center;gap:.4rem;}
+.qty-btn{width:28px;height:28px;border-radius:8px;background:var(--grey-light);border:1px solid var(--grey-mid);font-size:.95rem;font-weight:700;color:var(--blue);display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.qty-btn:hover{background:var(--blue);color:#fff;border-color:var(--blue);}
+.qty-val{font-weight:700;font-size:.88rem;min-width:20px;text-align:center;}
+.remove-btn{background:none;border:1px solid #fecaca;color:var(--danger);padding:.3rem .7rem;border-radius:8px;font-size:.72rem;font-weight:600;transition:all .15s;}
+.remove-btn:hover{background:var(--danger);color:#fff;border-color:var(--danger);}
+.chat-btn{background:linear-gradient(135deg,var(--blue),#1e4ab5);color:#fff;border:none;padding:.3rem .8rem;border-radius:8px;font-size:.72rem;font-weight:700;display:inline-flex;align-items:center;gap:.3rem;transition:all .15s;}
+.chat-btn:hover{opacity:.85;}
+
+/* ── MOBILE CART ITEMS (replaces table on small screens) ── */
+.cart-items-mobile{display:none;flex-direction:column;}
+.cart-item-card{padding:1rem 1.2rem;border-bottom:1px solid var(--grey-mid);display:flex;gap:.85rem;align-items:flex-start;}
+.cart-item-card:last-child{border-bottom:none;}
+.cart-item-img{width:60px;height:60px;border-radius:10px;object-fit:cover;border:1px solid var(--grey-mid);flex-shrink:0;}
+.cart-item-img-ph{width:60px;height:60px;border-radius:10px;background:var(--blue-pale);display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0;}
+.cart-item-info{flex:1;min-width:0;}
+.cart-item-name{font-weight:700;font-size:.88rem;line-height:1.3;}
+.cart-item-cat{font-size:.7rem;color:var(--text-muted);}
+.cart-item-price{font-size:.85rem;font-weight:600;color:var(--blue);margin-top:.25rem;}
+.cart-item-row{display:flex;align-items:center;justify-content:space-between;margin-top:.6rem;flex-wrap:wrap;gap:.5rem;}
+.cart-item-actions{display:flex;gap:.4rem;}
+
+/* ── SUMMARY CARD ── */
+.summary-card{background:#fff;border-radius:22px;overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid var(--grey-mid);position:sticky;top:80px;}
+.summary-header{background:var(--off-black);padding:1rem 1.4rem;}
+.summary-header h2{font-size:.85rem;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.06em;}
+.summary-body{padding:1.4rem;}
+.s-row{display:flex;justify-content:space-between;align-items:center;font-size:.86rem;margin-bottom:.7rem;color:var(--text-muted);}
+.s-row strong{color:var(--black);font-weight:600;}
+.s-divider{height:1px;background:var(--grey-mid);margin:.9rem 0;}
+.s-total{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;}
+.s-total span{font-size:.75rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;}
+.s-total strong{font-size:1.5rem;font-weight:700;color:var(--blue);}
+.s-note{font-size:.73rem;color:var(--text-muted);line-height:1.55;background:var(--blue-pale);padding:.75rem;border-radius:10px;margin-bottom:.9rem;}
+.checkout-btn{width:100%;background:linear-gradient(135deg,var(--blue) 0%,#1e4ab5 100%);color:#fff;border:none;padding:.85rem;border-radius:12px;font-size:.88rem;font-weight:700;transition:all .2s;box-shadow:0 2px 8px rgba(10,35,90,.25);margin-bottom:.6rem;}
+.checkout-btn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(10,35,90,.35);}
+.clear-btn{width:100%;background:none;border:1.5px solid var(--grey-mid);color:var(--text-muted);padding:.65rem;border-radius:12px;font-size:.82rem;font-weight:500;transition:all .2s;}
+.clear-btn:hover{border-color:var(--danger);color:var(--danger);}
+
+/* ── CHAT MODAL ── */
+.overlay{position:fixed;inset:0;background:rgba(5,8,16,.65);backdrop-filter:blur(5px);z-index:300;display:flex;align-items:flex-end;justify-content:center;padding:0;}
+.overlay.hidden{display:none;}
+.chat-modal{background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:100%;display:flex;flex-direction:column;height:85vh;overflow:hidden;box-shadow:var(--shadow-lg);animation:modalUp .22s ease;}
+@keyframes modalUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+.chat-product-hd{display:flex;align-items:center;gap:.9rem;padding:1rem 1.2rem;background:linear-gradient(135deg,var(--blue) 0%,#1e4ab5 100%);flex-shrink:0;position:relative;overflow:hidden;}
+.chat-product-hd::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at top right,rgba(91,141,238,.35) 0%,transparent 65%);pointer-events:none;}
+.chat-prod-avatar{width:52px;height:52px;border-radius:12px;overflow:hidden;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;border:2px solid rgba(255,255,255,.25);}
+.chat-prod-avatar img{width:100%;height:100%;object-fit:cover;}
+.chat-prod-info{flex:1;min-width:0;}
+.chat-prod-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);font-weight:600;margin-bottom:.15rem;}
+.chat-prod-title{font-weight:700;font-size:.95rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.chat-prod-subdesc{font-size:.7rem;color:rgba(255,255,255,.55);margin-top:.1rem;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;}
+.chat-prod-price-tag{display:inline-flex;font-size:.78rem;font-weight:700;color:rgba(255,255,255,.95);margin-top:.28rem;background:rgba(255,255,255,.15);padding:.15rem .55rem;border-radius:20px;border:1px solid rgba(255,255,255,.2);}
+.close-x{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.8);width:30px;height:30px;border-radius:50%;font-size:.85rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;flex-shrink:0;}
+.close-x:hover{background:rgba(255,255,255,.25);}
+.chat-status{display:flex;align-items:center;gap:.45rem;padding:.32rem 1rem;font-size:.68rem;font-weight:500;background:#fff;border-bottom:1px solid var(--grey-mid);flex-shrink:0;}
+.sdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.status-connecting .sdot{background:#f59e0b;animation:blink 1s infinite;}
+.status-connected .sdot{background:#16a34a;}
+.status-polling .sdot{background:var(--blue);animation:blink 2s infinite;}
+.status-disconnected .sdot{background:#dc2626;}
+.status-connecting .status-text{color:#92400e;}
+.status-connected .status-text{color:#166534;}
+.status-polling .status-text{color:var(--blue-mid);}
+.status-disconnected .status-text{color:#991b1b;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+.chat-init{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center;gap:.9rem;background:var(--grey-light);}
+.chat-init h4{font-family:'Playfair Display',serif;font-size:1.1rem;}
+.chat-init p{font-size:.82rem;color:var(--text-muted);line-height:1.55;}
+.start-chat-btn{background:linear-gradient(135deg,var(--blue),#1e4ab5);color:#fff;border:none;padding:.7rem 1.8rem;border-radius:40px;font-size:.86rem;font-weight:700;transition:all .2s;box-shadow:0 2px 10px rgba(10,35,90,.25);}
+.start-chat-btn:hover{transform:translateY(-1px);}
+.start-chat-btn:disabled{background:var(--grey-mid);color:var(--text-muted);transform:none;cursor:not-allowed;box-shadow:none;}
+.chat-msgs{flex:1;overflow-y:auto;padding:.9rem .85rem;display:flex;flex-direction:column;gap:.6rem;background:var(--grey-light);}
+.chat-msgs::-webkit-scrollbar{width:3px;}
+.chat-msgs::-webkit-scrollbar-thumb{background:var(--grey-mid);border-radius:3px;}
+.date-sep{display:flex;align-items:center;gap:.6rem;margin:.3rem 0;}
+.date-sep::before,.date-sep::after{content:'';flex:1;height:1px;background:var(--grey-mid);}
+.date-sep span{font-size:.62rem;color:var(--text-muted);font-weight:600;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;opacity:.6;}
+.cmsg{display:flex;flex-direction:column;max-width:80%;}
+.cmsg.mine{align-self:flex-end;align-items:flex-end;}
+.cmsg.theirs{align-self:flex-start;align-items:flex-start;}
+.msg-sender{font-size:.62rem;color:var(--text-muted);font-weight:700;margin-bottom:.22rem;padding:0 .25rem;}
+.bubble{padding:.6rem .9rem;border-radius:16px;font-size:.855rem;line-height:1.5;word-break:break-word;}
+.cmsg.mine .bubble{background:linear-gradient(135deg,var(--blue) 0%,#1e4ab5 100%);color:#fff;border-bottom-right-radius:4px;}
+.cmsg.theirs .bubble{background:#fff;color:var(--black);border-bottom-left-radius:4px;box-shadow:0 1px 3px rgba(10,35,90,.08);}
+.msg-meta{display:flex;align-items:center;gap:.3rem;font-size:.6rem;color:var(--text-muted);margin-top:.18rem;padding:0 .25rem;opacity:.7;}
+.cmsg.mine .msg-meta{justify-content:flex-end;}
+.read-tick{color:rgba(91,141,238,.9);}
+.chat-empty{color:var(--text-muted);font-size:.84rem;text-align:center;padding:2rem;}
+.pc-bubble{background:#fff;border:1px solid var(--grey-mid);border-radius:14px;overflow:hidden;width:220px;box-shadow:var(--shadow-md);cursor:pointer;align-self:flex-start;}
+.pc-img-wrap{position:relative;width:100%;height:110px;overflow:hidden;background:var(--blue-pale);}
+.pc-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
+.pc-img-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2.4rem;}
+.pc-price-badge{position:absolute;bottom:.5rem;left:.5rem;background:linear-gradient(135deg,var(--blue),#1e4ab5);color:#fff;font-size:.7rem;font-weight:700;padding:.2rem .55rem;border-radius:20px;}
+.pc-body{padding:.65rem .8rem .7rem;}
+.pc-name{font-weight:700;font-size:.83rem;color:var(--black);line-height:1.3;}
+.pc-desc{font-size:.7rem;color:var(--text-muted);margin-top:.2rem;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.pc-footer{display:flex;align-items:center;justify-content:space-between;margin-top:.5rem;padding-top:.45rem;border-top:1px solid var(--grey-mid);}
+.pc-time{font-size:.6rem;color:var(--text-muted);}
+.pc-tag{font-size:.6rem;font-weight:700;color:var(--blue);background:var(--blue-pale);padding:.18rem .5rem;border-radius:20px;}
+.chat-input-row{display:flex;gap:.5rem;padding:.75rem .85rem;border-top:1px solid var(--grey-mid);background:#fff;flex-shrink:0;align-items:flex-end;}
+.chat-textarea{flex:1;padding:.58rem .85rem;border:1.5px solid var(--grey-mid);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:.86rem;outline:none;transition:border-color .2s;resize:none;max-height:80px;line-height:1.45;background:var(--grey-light);color:var(--black);}
+.chat-textarea:focus{border-color:var(--blue);background:#fff;}
+.chat-textarea::placeholder{color:#bbb;}
+.send-btn{background:linear-gradient(135deg,var(--blue),#1e4ab5);color:#fff;border:none;width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;flex-shrink:0;}
+.send-btn:hover{transform:translateY(-1px);}
+.send-btn:disabled{background:var(--grey-mid);color:var(--text-muted);transform:none;cursor:not-allowed;}
+
+/* Toast */
+.toast{position:fixed;bottom:1.5rem;right:1rem;left:1rem;background:#fff;border:1px solid var(--grey-mid);border-radius:60px;padding:.6rem 1.5rem;font-size:.82rem;color:var(--blue);box-shadow:var(--shadow-lg);z-index:999;opacity:0;transform:translateY(20px);transition:all .3s;pointer-events:none;text-align:center;}
+.toast.show{opacity:1;transform:translateY(0);}
+.toast.success{border-left:3px solid var(--success);}
+.toast.error{border-left:3px solid var(--danger);}
+
+/* ── RESPONSIVE ── */
+@media(min-width:600px){
+  .toast{left:auto;right:1.5rem;max-width:280px;text-align:left;}
+}
+
+@media(max-width:800px){
+  .page-body{grid-template-columns:1fr;padding:0 3%;}
+  /* Move summary below cart */
+  .summary-card{position:static;order:2;}
+  .cart-card{order:1;}
+}
+
+@media(max-width:600px){
+  /* Switch to card layout */
+  .tbl-scroll{display:none;}
+  .cart-items-mobile{display:flex;}
+  .overlay{align-items:flex-end;}
+  .chat-modal{border-radius:20px 20px 0 0;height:90vh;}
+}
+
+@media(min-width:601px){
+  .chat-modal{border-radius:24px;max-width:460px;height:620px;}
+  .overlay{align-items:center;padding:1rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <a href="index.html" class="nav-logo">Volt<span>Edge</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="product.html">Products</a></li>
+    <li><a href="newArrivals.html">New Arrivals</a></li>
+    <li><a href="index.html#categories">Categories</a></li>
+  </ul>
+  <div class="nav-right-area">
+    <a href="profile.html" id="navProfileLink" style="font-size:.8rem;color:var(--blue);font-weight:500;text-decoration:none;white-space:nowrap;"></a>
+    <a href="product.html" class="nav-cta">Shop Now</a>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<!-- Mobile nav drawer -->
+<div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="closeMobileNav(event)">
+  <div class="mobile-nav-drawer">
+    <a href="index.html">Home</a>
+    <a href="product.html">Products</a>
+    <a href="newArrivals.html">New Arrivals</a>
+    <a href="index.html#categories">Categories</a>
+    <a href="product.html" style="margin-top:.5rem;background:var(--blue);color:#fff;border-radius:40px;text-align:center;padding:.65rem;">Shop Now</a>
+  </div>
+</div>
+
+<script>
+(function(){
+  const el=document.getElementById('navProfileLink');
+  if(localStorage.getItem('token')){const n=localStorage.getItem('userName')||'Me';el.textContent='Hi, '+n.split(' ')[0];}
+  else{el.textContent='Sign in';el.href='login.html';}
+})();
+window.addEventListener('scroll',()=>{document.getElementById('mainNav').style.padding=window.scrollY>40?'0.7rem 4%':'1rem 4%';});
+const Auth={
+  token:()=>localStorage.getItem('token'),userId:()=>localStorage.getItem('userId'),
+  isLoggedIn:()=>!!localStorage.getItem('token'),
+  headers:()=>({'Content-Type':'application/json','Authorization':`Bearer ${localStorage.getItem('token')}`}),
+  logout:()=>{['token','userId','role','userName'].forEach(k=>localStorage.removeItem(k));window.location.href='login.html';}
+};
+if(!Auth.isLoggedIn())window.location.href='login.html?redirect=cart.html';
+const ham=document.getElementById('hamburger');
+const mno=document.getElementById('mobileNavOverlay');
+ham.addEventListener('click',()=>{const o=mno.classList.toggle('open');ham.classList.toggle('open',o);});
+function closeMobileNav(e){if(e.target===mno){mno.classList.remove('open');ham.classList.remove('open');}}
+</script>
+
+<div class="page-hero">
+  <div class="breadcrumb"><a href="index.html">Home</a> / Cart</div>
+  <h1>Your Cart</h1>
+  <p>Review items and chat with sellers directly</p>
+</div>
+
+<div class="page-body">
+  <div class="loading-wrap" id="loadingMsg"><div class="spinner"></div> Loading your cart…</div>
+  <div class="error-bar" id="errorBar"></div>
+  <div class="empty-card" id="emptyMsg">
+    <div class="empty-ico">🛒</div>
+    <h3>Your cart is empty</h3>
+    <p>You haven't added anything yet.</p>
+    <a href="product.html">Browse Products</a>
+  </div>
+
+  <div class="cart-card" id="cartContainer" style="display:none;">
+    <div class="cart-card-header">
+      <h2>Cart Items</h2>
+      <span class="item-count-badge" id="itemCount">0 items</span>
+    </div>
+    <!-- Desktop table -->
+    <div class="tbl-scroll" style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>Product</th><th>Price</th><th>Qty</th><th>Subtotal</th>
+            <th style="text-align:center;">Chat</th><th style="text-align:center;">Remove</th>
+          </tr>
+        </thead>
+        <tbody id="cartBody"></tbody>
+      </table>
+    </div>
+    <!-- Mobile cards -->
+    <div class="cart-items-mobile" id="cartMobile"></div>
+  </div>
+
+  <div class="summary-card" id="summaryCard" style="display:none;">
+    <div class="summary-header"><h2>Order Summary</h2></div>
+    <div class="summary-body">
+      <div class="s-row"><span>Items</span><strong id="summaryItems">—</strong></div>
+      <div class="s-divider"></div>
+      <div class="s-total">
+        <span>Total</span>
+        <strong>₵<span id="cartTotal">0.00</span></strong>
+      </div>
+      <p class="s-note">💬 Tap <strong>Chat</strong> on any item to ask the seller about specs or delivery.</p>
+      <button class="clear-btn" id="clearCartBtn">✕ Clear Cart</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHAT MODAL -->
+<div class="overlay hidden" id="chatOverlay">
+  <div class="chat-modal">
+    <div class="chat-product-hd" id="chatProductHd">
+      <div class="chat-prod-avatar" id="chatProdAvatar">💻</div>
+      <div class="chat-prod-info">
+        <div class="chat-prod-label">Chat with Seller</div>
+        <div class="chat-prod-title" id="chatProdTitle">Product</div>
+        <div class="chat-prod-subdesc" id="chatProdDesc"></div>
+        <div class="chat-prod-price-tag" id="chatProdPrice"></div>
+      </div>
+      <button class="close-x" id="closeChatBtn">✕</button>
+    </div>
+    <div class="chat-status status-connecting" id="chatStatus">
+      <div class="sdot"></div>
+      <span class="status-text" id="chatStatusTxt">Connecting…</span>
+    </div>
+    <div class="chat-init" id="chatInit">
+      <div style="font-size:2.5rem;">💬</div>
+      <h4>Chat with the Seller</h4>
+      <p id="chatInitDesc">Have a question? Start a conversation with the seller.</p>
+      <button class="start-chat-btn" id="startChatBtn">Start Conversation</button>
+    </div>
+    <div class="chat-msgs" id="chatMsgs" style="display:none;"></div>
+    <div class="chat-input-row" id="chatInputRow" style="display:none;">
+      <textarea class="chat-textarea" id="chatInput" rows="1" placeholder="Type a message…"></textarea>
+      <button class="send-btn" id="sendBtn" title="Send">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API_BASE='http://localhost:8080/api/v1';
+const WS_URL='http://localhost:8080/ws/chat';
+let cartData=null,activeChatRoom=null,activeItem=null;
+let chatMsgs=[],stompClient=null,wsConnected=false,pollInterval=null;
+let toastTimer;
+function showToast(msg,type=''){const t=document.getElementById('toast');t.innerHTML=msg;t.className='toast show'+(type?' '+type:'');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3500);}
+function fmt(val){const n=val==null?0:typeof val==='number'?val:parseFloat(String(val).replace(/[^0-9.]/g,''))||0;return n.toFixed(2);}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function fmtT(iso){try{return new Date(iso).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}catch{return '';}}
+async function authFetch(url,opts={}){const res=await fetch(url,{...opts,headers:Auth.headers()});if(res.status===401){Auth.logout();throw new Error('Session expired.');}return res;}
+
+async function loadCart(){
+  try{
+    const res=await authFetch(`${API_BASE}/cart`);
+    if(!res.ok)throw new Error('Failed to load cart');
+    cartData=await res.json();renderCart();
+  }catch(err){
+    document.getElementById('loadingMsg').style.display='none';
+    const el=document.getElementById('errorBar');el.textContent=err.message;el.classList.add('show');
+  }
+}
+
+function renderCart(){
+  document.getElementById('loadingMsg').style.display='none';
+  const items=cartData.items||cartData.cartItems||[];
+  if(!items.length){document.getElementById('emptyMsg').style.display='block';return;}
+  document.getElementById('cartContainer').style.display='block';
+  document.getElementById('summaryCard').style.display='block';
+  const total=cartData.cartTotal??cartData.totalAmount??cartData.total??0;
+  document.getElementById('cartTotal').textContent=fmt(total);
+  document.getElementById('summaryItems').textContent=`${items.length} item${items.length!==1?'s':''}`;
+  document.getElementById('itemCount').textContent=`${items.length} item${items.length!==1?'s':''}`;
+
+  const tbody=document.getElementById('cartBody');tbody.innerHTML='';
+  const mobileWrap=document.getElementById('cartMobile');mobileWrap.innerHTML='';
+
+  items.forEach(item=>{
+    const price=item.unitPrice??item.price??0;
+    const subtotal=item.subtotal??item.subTotal??(parseFloat(price)*(item.quantity||1));
+    const name=item.productName??item.name??'Product';
+    const id=item.cartItemId??item.id;const qty=item.quantity||1;
+    const img=item.imageUrl||null;const cat=item.category||'';
+    const productId=item.productId??null;const desc=item.description||item.productDescription||'';
+    const imgHtml=img?`<img class="product-thumb" src="${img}" alt="${esc(name)}" loading="lazy">`:`<div class="product-thumb-ph">💻</div>`;
+
+    // Desktop row
+    const tr=document.createElement('tr');tr.id=`row-${id}`;
+    tr.innerHTML=`
+      <td><div class="product-cell">${imgHtml}<div>
+        <div class="product-name">${esc(name)}</div>
+        <div class="product-cat">${esc(cat)}</div>
+      </div></div></td>
+      <td class="price-cell">₵${fmt(price)}</td>
+      <td><div class="qty-wrap">
+        <button class="qty-btn" onclick="changeQty(${id},${qty-1})">−</button>
+        <span class="qty-val">${qty}</span>
+        <button class="qty-btn" onclick="changeQty(${id},${qty+1})">+</button>
+      </div></td>
+      <td class="sub-cell">₵${fmt(subtotal)}</td>
+      <td style="text-align:center;"><button class="chat-btn" onclick='openChat(${productId},${JSON.stringify(name)},${JSON.stringify(img||"")},${JSON.stringify(desc)},${fmt(price)})'>💬 Chat</button></td>
+      <td style="text-align:center;"><button class="remove-btn" onclick="removeItem(${id})"><i class="fas fa-trash-alt"></i></button></td>`;
+    tbody.appendChild(tr);
+
+    // Mobile card
+    const mCard=document.createElement('div');
+    mCard.className='cart-item-card';
+    mCard.innerHTML=`
+      ${img?`<img class="cart-item-img" src="${img}" alt="${esc(name)}" loading="lazy">`:`<div class="cart-item-img-ph">💻</div>`}
+      <div class="cart-item-info">
+        <div class="cart-item-name">${esc(name)}</div>
+        <div class="cart-item-cat">${esc(cat)}</div>
+        <div class="cart-item-price">₵${fmt(price)} · Subtotal ₵${fmt(subtotal)}</div>
+        <div class="cart-item-row">
+          <div class="qty-wrap">
+            <button class="qty-btn" onclick="changeQty(${id},${qty-1})">−</button>
+            <span class="qty-val">${qty}</span>
+            <button class="qty-btn" onclick="changeQty(${id},${qty+1})">+</button>
+          </div>
+          <div class="cart-item-actions">
+            <button class="chat-btn" onclick='openChat(${productId},${JSON.stringify(name)},${JSON.stringify(img||"")},${JSON.stringify(desc)},${fmt(price)})'>💬</button>
+            <button class="remove-btn" onclick="removeItem(${id})"><i class="fas fa-trash-alt"></i></button>
+          </div>
+        </div>
+      </div>`;
+    mobileWrap.appendChild(mCard);
+  });
+}
+
+async function changeQty(id,qty){if(qty<0)return;if(qty===0){removeItem(id);return;}try{const res=await authFetch(`${API_BASE}/cart/${id}?quantity=${qty}`,{method:'PATCH'});if(!res.ok)throw new Error('Update failed');cartData=await res.json();renderCart();}catch(e){alert(e.message);}}
+async function removeItem(id){try{const res=await authFetch(`${API_BASE}/cart/${id}`,{method:'DELETE'});if(!res.ok)throw new Error('Remove failed');cartData=await res.json();const items=cartData.items||cartData.cartItems||[];if(!items.length){document.getElementById('cartContainer').style.display='none';document.getElementById('summaryCard').style.display='none';document.getElementById('emptyMsg').style.display='block';}else renderCart();}catch(e){alert(e.message);}}
+document.getElementById('clearCartBtn').addEventListener('click',async()=>{if(!confirm('Clear your entire cart?'))return;try{const res=await authFetch(`${API_BASE}/cart`,{method:'DELETE'});if(!res.ok)throw new Error('Clear failed');document.getElementById('cartContainer').style.display='none';document.getElementById('summaryCard').style.display='none';document.getElementById('emptyMsg').style.display='block';}catch(e){alert(e.message);}});
+
+/* CHAT */
+function openChat(productId,name,imgSrc,desc,price){
+  activeItem={productId,name,imgSrc,desc,price};activeChatRoom=null;chatMsgs=[];
+  document.getElementById('chatProdTitle').textContent=name;
+  document.getElementById('chatProdDesc').textContent=desc||'';
+  document.getElementById('chatProdPrice').textContent=price?`₵${price}`:'';
+  document.getElementById('chatInitDesc').textContent=`Have a question about "${name}"? Chat directly with the seller.`;
+  const av=document.getElementById('chatProdAvatar');
+  av.innerHTML=imgSrc?`<img src="${esc(imgSrc)}" alt="${esc(name)}">`:'💻';
+  document.getElementById('chatInit').style.display='flex';
+  document.getElementById('chatMsgs').style.display='none';
+  document.getElementById('chatMsgs').innerHTML='';
+  document.getElementById('chatInputRow').style.display='none';
+  document.getElementById('startChatBtn').disabled=false;
+  document.getElementById('startChatBtn').textContent='Start Conversation';
+  setStatus('connecting','Connecting…');
+  document.getElementById('chatOverlay').classList.remove('hidden');
+  checkExistingRoom(productId);
+}
+async function checkExistingRoom(productId){try{const res=await authFetch(`${API_BASE}/chat/rooms`);if(!res.ok)return;const rooms=await res.json();const found=rooms.find(r=>r.productId==productId);if(found){activeChatRoom=found;await loadHistory(found.chatRoomId);showChatUI();connectWS(found.chatRoomId);}else{setStatus('connecting','Ready to chat');}}catch{}}
+document.getElementById('startChatBtn').addEventListener('click',async()=>{const btn=document.getElementById('startChatBtn');btn.disabled=true;btn.textContent='Starting…';try{const res=await authFetch(`${API_BASE}/chat/start`,{method:'POST',body:JSON.stringify({productId:activeItem.productId})});if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.message||'Could not start chat');}activeChatRoom=await res.json();await loadHistory(activeChatRoom.chatRoomId);showChatUI();connectWS(activeChatRoom.chatRoomId);}catch(e){alert(e.message);btn.disabled=false;btn.textContent='Start Conversation';}});
+async function loadHistory(roomId){try{const res=await authFetch(`${API_BASE}/chat/rooms/${roomId}/history`);if(res.ok)chatMsgs=await res.json();}catch{}renderMsgs();}
+function showChatUI(){document.getElementById('chatInit').style.display='none';document.getElementById('chatMsgs').style.display='flex';document.getElementById('chatInputRow').style.display='flex';scrollDown();}
+function setStatus(cls,txt){const el=document.getElementById('chatStatus');el.className=`chat-status status-${cls}`;document.getElementById('chatStatusTxt').textContent=txt;}
+function connectWS(roomId){if(stompClient&&wsConnected){subscribeRoom(roomId);return;}try{const sock=new SockJS(WS_URL);stompClient=Stomp.over(sock);stompClient.debug=null;stompClient.connect({'Authorization':`Bearer ${Auth.token()}`},()=>{wsConnected=true;setStatus('connected','Live · instant messages');stopPolling();subscribeRoom(roomId);},()=>{wsConnected=false;stompClient=null;startPolling(roomId);});sock.onclose=()=>{if(wsConnected){wsConnected=false;stompClient=null;setStatus('disconnected','Reconnecting…');setTimeout(()=>{if(!wsConnected&&activeChatRoom)connectWS(activeChatRoom.chatRoomId);},3000);}};}catch{startPolling(roomId);}}
+function subscribeRoom(roomId){stompClient.subscribe(`/topic/user/chat/${roomId}`,frame=>{try{const msg=JSON.parse(frame.body);if(!chatMsgs.some(m=>m.messageId===msg.messageId)){chatMsgs.push(msg);renderMsgs();}}catch{}});}
+function startPolling(roomId){if(pollInterval)return;setStatus('polling','Auto-refresh every 4s');pollInterval=setInterval(async()=>{if(!roomId)return;try{const r=await authFetch(`${API_BASE}/chat/rooms/${roomId}/history`);if(!r.ok)return;const h=await r.json();if(h.length>chatMsgs.length){chatMsgs=h;renderMsgs();}}catch{}},4000);}
+function stopPolling(){if(pollInterval){clearInterval(pollInterval);pollInterval=null;}}
+function renderMsgs(){const el=document.getElementById('chatMsgs');if(!el)return;if(!chatMsgs.length){el.innerHTML='<div class="chat-empty">No messages yet — ask the seller something!</div>';return;}let html='<div class="date-sep"><span>Today</span></div>';chatMsgs.forEach(m=>{const mine=m.senderType==='USER';const t=fmtT(m.sentAt);if(m.content&&m.content.startsWith('PRODUCT_CARD::')){const parts=m.content.split('::');const pn=parts[1]||'';const pp=parts[2]||'';const pd=parts[3]||'';const pi=parts[4]||'';html+=`<div class="pc-bubble"><div class="pc-img-wrap">${pi?`<img src="${esc(pi)}" alt="${esc(pn)}">`:`<div class="pc-img-ph">📦</div>`}${pp?`<div class="pc-price-badge">₵${esc(pp)}</div>`:''}</div><div class="pc-body"><div class="pc-name">${esc(pn)}</div>${pd?`<div class="pc-desc">${esc(pd)}</div>`:''}<div class="pc-footer"><span class="pc-time">${t}</span><span class="pc-tag">📦 Product</span></div></div></div>`;return;}html+=`<div class="cmsg ${mine?'mine':'theirs'}">${!mine?`<div class="msg-sender">${esc(m.senderName||'Seller')}</div>`:''}<div class="bubble">${esc(m.content||'')}</div><div class="msg-meta">${t}${mine?' <span class="read-tick">✓✓</span>':''}</div></div>`;});el.innerHTML=html;scrollDown();}
+document.getElementById('sendBtn').addEventListener('click',sendMsg);
+document.getElementById('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}});
+document.getElementById('chatInput').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,80)+'px';});
+async function sendMsg(){if(!activeChatRoom)return;const input=document.getElementById('chatInput');const content=input.value.trim();if(!content)return;const btn=document.getElementById('sendBtn');btn.disabled=true;input.value='';input.style.height='auto';const opt={messageId:'tmp-'+Date.now(),senderType:'USER',senderName:localStorage.getItem('userName')||'You',content,isProductCard:false,sentAt:new Date().toISOString()};chatMsgs.push(opt);renderMsgs();let sent=false;if(wsConnected&&stompClient){try{stompClient.send(`/app/chat/${activeChatRoom.chatRoomId}/user/send`,{},JSON.stringify({senderId:Auth.userId(),content}));sent=true;}catch{}}if(!sent){try{const r=await authFetch(`${API_BASE}/chat/rooms/${activeChatRoom.chatRoomId}/send`,{method:'POST',body:JSON.stringify({content})});if(r.ok){const s=await r.json();chatMsgs=chatMsgs.filter(m=>m.messageId!==opt.messageId);chatMsgs.push(s);renderMsgs();}}catch{}}btn.disabled=false;document.getElementById('chatInput').focus();}
+document.getElementById('closeChatBtn').addEventListener('click',closeChat);
+document.getElementById('chatOverlay').addEventListener('click',e=>{if(e.target===document.getElementById('chatOverlay'))closeChat();});
+function closeChat(){document.getElementById('chatOverlay').classList.add('hidden');stopPolling();}
+function scrollDown(){const el=document.getElementById('chatMsgs');requestAnimationFrame(()=>{el.scrollTop=el.scrollHeight;});}
+window.addEventListener('beforeunload',()=>{stopPolling();if(stompClient&&wsConnected){try{stompClient.disconnect();}catch{}}});
+loadCart();
+</script>
+</body>
+</html>

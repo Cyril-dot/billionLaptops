@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register — VoltEdge</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue: #0a235a;--blue-mid: #1a3a7a;--black: #000000;
+  --off-black: #0f0f0f;--white: #ffffff;--grey-light: #f5f7fa;
+  --grey-mid: #eaeef2;--text-muted: #3a3a3a;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: 'DM Sans', system-ui, sans-serif; background: var(--grey-light); color: var(--black); overflow-x: hidden; min-height: 100vh; }
+
+/* ── NAV ── */
+nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 1rem 4%; background: rgba(255,255,255,0.96); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--grey-mid); transition: padding 0.3s; min-height: 60px; }
+.nav-logo { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 600; color: var(--blue); text-decoration: none; letter-spacing: -0.01em; white-space: nowrap; }
+.nav-logo span { color: var(--black); }
+.nav-links { display: flex; gap: 2rem; list-style: none; }
+.nav-links a { text-decoration: none; color: var(--off-black); font-size: 0.9rem; font-weight: 450; transition: color 0.2s; position: relative; }
+.nav-links a::after { content: ''; position: absolute; bottom: -3px; left: 0; width: 0; height: 1.5px; background: var(--blue); transition: width 0.2s; }
+.nav-links a:hover { color: var(--blue); }
+.nav-links a:hover::after { width: 100%; }
+.nav-cta { background: var(--blue); color: var(--white); border: none; padding: 0.5rem 1.3rem; border-radius: 40px; font-size: 0.8rem; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s, transform 0.15s; text-decoration: none; white-space: nowrap; }
+.nav-cta:hover { background: var(--blue-mid); transform: translateY(-1px); }
+.chat-nav-btn { display: flex; align-items: center; gap: 0.35rem; text-decoration: none; font-size: 0.82rem; font-weight: 500; color: var(--off-black); padding: 0.4rem 0.85rem; border-radius: 40px; border: 1.5px solid var(--grey-mid); transition: all 0.2s; white-space: nowrap; }
+.chat-nav-btn:hover { border-color: var(--blue); color: var(--blue); background: rgba(10,35,90,0.04); }
+.nav-hamburger { display: none; background: none; border: none; font-size: 1.25rem; color: var(--blue); padding: .4rem; border-radius: 8px; }
+.nav-mobile-menu { display: none; position: fixed; top: 60px; left: 0; right: 0; background: #fff; border-bottom: 2px solid #e8eef8; padding: 1rem 4%; z-index: 99; flex-direction: column; gap: .2rem; box-shadow: 0 8px 24px rgba(10,35,90,.1); }
+.nav-mobile-menu.open { display: flex; }
+.nav-mobile-menu a { display: block; padding: .7rem .8rem; border-radius: 8px; color: var(--off-black); font-size: .9rem; font-weight: 500; transition: background .15s, color .15s; }
+.nav-mobile-menu a:hover { background: #f0f4fc; color: var(--blue); }
+@media(max-width: 800px) { .nav-links { display: none; } .nav-hamburger { display: block; } }
+@media(max-width: 480px) { .nav-cta { display: none; } .chat-nav-btn { display: none; } }
+
+/* ── PAGE WRAPPER ── */
+.page-wrapper { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 6rem 1rem 3rem; }
+
+/* ── REGISTER CARD ── */
+.register-card { background: var(--white); border-radius: 28px; box-shadow: 0 20px 60px -20px rgba(10,35,90,0.18), 0 1px 3px rgba(0,0,0,0.04); overflow: hidden; width: 100%; max-width: 900px; display: grid; grid-template-columns: 1fr 1fr; }
+
+/* Left: product banner */
+.register-banner { background: linear-gradient(145deg, var(--blue) 0%, var(--blue-mid) 100%); padding: 3rem 2.5rem; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; }
+.register-banner::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at top right, rgba(255,255,255,0.08) 0%, transparent 60%); pointer-events: none; }
+.banner-logo { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 600; color: #fff; margin-bottom: 2rem; }
+.banner-logo span { color: rgba(255,255,255,0.55); }
+.banner-headline { font-family: 'Playfair Display', serif; font-size: 1.9rem; font-weight: 500; color: #fff; line-height: 1.25; margin-bottom: 1.2rem; }
+.banner-desc { font-size: 0.88rem; color: rgba(255,255,255,0.65); font-weight: 300; line-height: 1.7; margin-bottom: 2rem; }
+.banner-products { display: flex; flex-direction: column; gap: 0.65rem; }
+.banner-prod-card { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14); border-radius: 14px; padding: 0.75rem 1rem; display: flex; align-items: center; gap: 0.9rem; backdrop-filter: blur(4px); transition: background 0.2s; }
+.banner-prod-card:hover { background: rgba(255,255,255,0.13); }
+.bpc-img { width: 44px; height: 44px; border-radius: 10px; overflow: hidden; flex-shrink: 0; background: rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border: 1px solid rgba(255,255,255,0.18); }
+.bpc-img img { width: 100%; height: 100%; object-fit: cover; }
+.bpc-info { flex: 1; min-width: 0; }
+.bpc-name { font-size: 0.8rem; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bpc-cat { font-size: 0.68rem; color: rgba(255,255,255,0.45); margin-top: 0.1rem; }
+.bpc-price { font-size: 0.82rem; font-weight: 700; color: rgba(255,255,255,0.9); flex-shrink: 0; }
+
+/* Right: form */
+.register-form-side { padding: 2.8rem 2.5rem; display: flex; flex-direction: column; overflow-y: auto; }
+.form-heading { font-family: 'Playfair Display', serif; font-size: 1.7rem; font-weight: 500; color: var(--black); margin-bottom: 0.3rem; }
+.form-sub { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.8rem; font-weight: 300; }
+.form-sub a { color: var(--blue); font-weight: 600; text-decoration: none; }
+.form-sub a:hover { text-decoration: underline; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+.field { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 0.9rem; }
+.field label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+.field-input-wrap { position: relative; }
+.field-input-wrap .field-icon { position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%); color: rgba(10,35,90,0.35); font-size: 0.85rem; pointer-events: none; }
+.field input { width: 100%; padding: 0.65rem 0.9rem 0.65rem 2.3rem; border: 1.5px solid var(--grey-mid); border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; color: var(--black); background: var(--grey-light); outline: none; transition: border-color 0.2s, box-shadow 0.2s, background 0.2s; }
+.field input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(10,35,90,0.08); background: var(--white); }
+.field input::placeholder { color: rgba(0,0,0,0.25); }
+.error-msg { background: #fff0f0; border: 1px solid #ffd6d6; color: #c0392b; padding: 0.6rem 0.9rem; border-radius: 10px; font-size: 0.8rem; margin-bottom: 1rem; display: none; }
+.submit-btn { width: 100%; background: var(--blue); color: var(--white); border: none; padding: 0.85rem; border-radius: 40px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: background 0.2s, transform 0.15s, box-shadow 0.2s; box-shadow: 0 4px 16px rgba(10,35,90,0.22); margin-bottom: 1rem; }
+.submit-btn:hover { background: var(--blue-mid); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(10,35,90,0.3); }
+.submit-btn:disabled { background: #b0b8cc; cursor: not-allowed; transform: none; box-shadow: none; }
+.back-link { text-align: center; font-size: 0.8rem; color: var(--text-muted); }
+.back-link a { color: var(--blue); font-weight: 500; text-decoration: none; }
+.back-link a:hover { text-decoration: underline; }
+
+/* ── RESPONSIVE ── */
+/* Tablet: hide banner, keep card as single column */
+@media(max-width: 720px) {
+  .register-card { grid-template-columns: 1fr; border-radius: 20px; }
+  .register-banner { display: none; }
+  .register-form-side { padding: 2.2rem 2rem; }
+}
+
+/* Mobile card full-width */
+@media(max-width: 500px) {
+  .page-wrapper { padding: 5rem .75rem 2rem; align-items: flex-start; }
+  .register-card { border-radius: 16px; }
+  .register-form-side { padding: 1.8rem 1.4rem 2rem; }
+  .form-heading { font-size: 1.4rem; }
+  .form-sub { margin-bottom: 1.4rem; }
+  .field-row { grid-template-columns: 1fr; gap: 0; }
+  .field { margin-bottom: .8rem; }
+  .field input { font-size: .92rem; padding: .7rem .9rem .7rem 2.2rem; }
+  .submit-btn { padding: .8rem; font-size: .9rem; }
+}
+
+/* Show banner on wide mobile landscape if room */
+@media(min-width: 640px) and (max-width: 720px) {
+  .register-banner { display: flex; padding: 2rem 1.8rem; }
+  .register-card { grid-template-columns: 1fr 1fr; }
+  .banner-headline { font-size: 1.4rem; }
+  .banner-desc { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <a href="index.html" class="nav-logo">Volt<span>Edge</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="product.html">Products</a></li>
+    <li><a href="newArrivals.html">New Arrivals</a></li>
+    <li><a href="#categories">Categories</a></li>
+  </ul>
+  <div style="display:flex;align-items:center;gap:.5rem;">
+    <a href="my-chats.html" class="chat-nav-btn" id="chatNavBtn"><i class="fa-regular fa-comment-dots"></i> Chat</a>
+    <a href="login.html" style="font-size:.8rem;color:var(--blue);font-weight:500;text-decoration:none;" id="homeAuthLink">Sign in</a>
+    <a href="product.html" class="nav-cta">Shop Now</a>
+    <button class="nav-hamburger" id="navHamburger" aria-label="Open menu"><i class="fas fa-bars"></i></button>
+  </div>
+</nav>
+
+<div class="nav-mobile-menu" id="navMobileMenu">
+  <a href="index.html">Home</a>
+  <a href="product.html">Products</a>
+  <a href="newArrivals.html">New Arrivals</a>
+  <a href="login.html">Sign in</a>
+</div>
+
+<script>
+  document.getElementById('chatNavBtn').addEventListener('click', function(e) {
+    if (!localStorage.getItem('token')) { e.preventDefault(); window.location.href = 'login.html?redirect=my-chats.html'; }
+  });
+  if (localStorage.getItem('token')) {
+    const el = document.getElementById('homeAuthLink');
+    if (el) { const n = localStorage.getItem('userName') || 'Me'; el.textContent = 'Hi, ' + n.split(' ')[0]; el.href = 'profile.html'; }
+  }
+  const ham = document.getElementById('navHamburger'), menu = document.getElementById('navMobileMenu');
+  ham.addEventListener('click', () => { const o = menu.classList.toggle('open'); ham.innerHTML = o ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>'; });
+  document.addEventListener('click', e => { if (!menu.contains(e.target) && e.target !== ham && !ham.contains(e.target)) { menu.classList.remove('open'); ham.innerHTML = '<i class="fas fa-bars"></i>'; } });
+  window.addEventListener('scroll', () => { document.getElementById('mainNav').style.padding = window.scrollY > 60 ? '0.6rem 4%' : '1rem 4%'; });
+</script>
+
+<div class="page-wrapper">
+  <div class="register-card">
+    <!-- LEFT: banner -->
+    <div class="register-banner">
+      <div>
+        <div class="banner-logo">Volt<span>Edge</span></div>
+        <h2 class="banner-headline">Join thousands of happy customers.</h2>
+        <p class="banner-desc">Get access to exclusive deals, order tracking, and personalised product recommendations.</p>
+      </div>
+      <div class="banner-products">
+        <div class="banner-prod-card">
+          <div class="bpc-img"><img src="images/laptopImage1.png" alt="HP EliteBook" onerror="this.parentElement.innerHTML='💻'"></div>
+          <div class="bpc-info"><div class="bpc-name">HP EliteBook 1030 G3</div><div class="bpc-cat">Laptop · HP</div></div>
+          <div class="bpc-price">₵4,500</div>
+        </div>
+        <div class="banner-prod-card">
+          <div class="bpc-img"><img src="images/laptopImage5.png" alt="Samsung Galaxy" onerror="this.parentElement.innerHTML='📱'"></div>
+          <div class="bpc-info"><div class="bpc-name">Samsung Galaxy S25 Ultra</div><div class="bpc-cat">Smartphone · Samsung</div></div>
+          <div class="bpc-price">₵20,500</div>
+        </div>
+        <div class="banner-prod-card">
+          <div class="bpc-img"><img src="images/laptopImage4.png" alt="AirPods Pro" onerror="this.parentElement.innerHTML='🎧'"></div>
+          <div class="bpc-info"><div class="bpc-name">AirPods Pro 2</div><div class="bpc-cat">Accessories · Apple</div></div>
+          <div class="bpc-price">₵500</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: form -->
+    <div class="register-form-side">
+      <h1 class="form-heading">Create account</h1>
+      <p class="form-sub">Already have an account? <a href="login.html">Sign in</a></p>
+      <div class="field-row">
+        <div class="field">
+          <label>First Name</label>
+          <div class="field-input-wrap"><i class="fa-regular fa-user field-icon"></i><input type="text" id="firstName" required placeholder="John" autocomplete="given-name"></div>
+        </div>
+        <div class="field">
+          <label>Last Name</label>
+          <div class="field-input-wrap"><i class="fa-regular fa-user field-icon"></i><input type="text" id="lastName" required placeholder="Doe" autocomplete="family-name"></div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <div class="field-input-wrap"><i class="fa-regular fa-envelope field-icon"></i><input type="email" id="email" required placeholder="you@example.com" autocomplete="email" inputmode="email"></div>
+      </div>
+      <div class="field">
+        <label>Phone</label>
+        <div class="field-input-wrap"><i class="fa-solid fa-phone field-icon"></i><input type="tel" id="phone" required placeholder="0241234567" autocomplete="tel" inputmode="tel"></div>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <div class="field-input-wrap"><i class="fa-solid fa-lock field-icon"></i><input type="password" id="password" required placeholder="Min 6 characters" autocomplete="new-password"></div>
+      </div>
+      <div class="field">
+        <label>Confirm Password</label>
+        <div class="field-input-wrap"><i class="fa-solid fa-lock field-icon"></i><input type="password" id="confirmPassword" required placeholder="Repeat password" autocomplete="new-password"></div>
+      </div>
+      <div class="error-msg" id="errorMsg"></div>
+      <button class="submit-btn" id="submitBtn" type="button">Create Account</button>
+      <div class="back-link"><a href="index.html">← Back to Home</a></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_BASE = 'http://localhost:8080/api/v1';
+if (localStorage.getItem('token') && localStorage.getItem('role') === 'USER') window.location.href = 'product.html';
+
+document.getElementById('submitBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('submitBtn');
+  const errEl = document.getElementById('errorMsg');
+  errEl.style.display = 'none';
+  const password = document.getElementById('password').value;
+  const confirmPassword = document.getElementById('confirmPassword').value;
+  if (password !== confirmPassword) { errEl.textContent = 'Passwords do not match.'; errEl.style.display = 'block'; return; }
+  if (password.length < 6) { errEl.textContent = 'Password must be at least 6 characters.'; errEl.style.display = 'block'; return; }
+  btn.disabled = true; btn.textContent = 'Creating account…';
+  const payload = { firstName: document.getElementById('firstName').value.trim(), lastName: document.getElementById('lastName').value.trim(), email: document.getElementById('email').value.trim(), phone: document.getElementById('phone').value.trim(), password };
+  try {
+    const res = await fetch(`${API_BASE}/auth/user/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.message || 'Registration failed. Please try again.'); }
+    const data = await res.json();
+    localStorage.setItem('token', data.token); localStorage.setItem('role', data.role); localStorage.setItem('userId', data.userId); localStorage.setItem('userName', `${payload.firstName} ${payload.lastName}`);
+    const params = new URLSearchParams(window.location.search);
+    window.location.href = params.get('redirect') || 'product.html';
+  } catch (err) { errEl.textContent = err.message; errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Create Account'; }
+});
+document.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('submitBtn').click(); });
+</script>
+</body>
+</html>

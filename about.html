@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>VoltEdge — About Us</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue: #0a235a;
+      --blue-mid: #1a3a7a;
+      --blue-pale: #f0f4fc;
+      --black: #000000;
+      --off-black: #0f0f0f;
+      --white: #ffffff;
+      --grey-light: #f5f7fa;
+      --grey-mid: #eaeef2;
+      --text-muted: #5a6275;
+      --cream: #faf9f6;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--white);
+      color: var(--black);
+      overflow-x: hidden;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    /* ══ PROGRESS BAR ══ */
+    #progress-bar {
+      position: fixed; top: 0; left: 0;
+      height: 2px; background: var(--blue);
+      z-index: 999; transition: width 0.2s ease; width: 0%;
+    }
+
+    /* ══ NAV ══ */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 4%;
+      background: rgba(255,255,255,0.96);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--grey-mid);
+      transition: padding 0.3s;
+      gap: 1rem;
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem; font-weight: 600;
+      color: var(--blue); letter-spacing: -0.01em;
+      flex-shrink: 0;
+    }
+    .nav-logo span { color: var(--black); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      color: var(--off-black); font-size: 0.9rem; font-weight: 450;
+      transition: color 0.2s; position: relative; white-space: nowrap;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -3px; left: 0;
+      width: 0; height: 1.5px; background: var(--blue); transition: width 0.2s;
+    }
+    .nav-links a:hover { color: var(--blue); }
+    .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+    .nav-links a.active { color: var(--blue); }
+    .nav-right { display: flex; align-items: center; gap: .6rem; flex-shrink: 0; }
+    .nav-auth {
+      font-size: .82rem; color: var(--blue); font-weight: 500; white-space: nowrap;
+    }
+    .nav-cta {
+      background: var(--blue); color: #fff; border: none;
+      padding: .48rem 1.2rem; border-radius: 40px;
+      font-size: .8rem; font-weight: 600; font-family: 'DM Sans', sans-serif;
+      transition: background .2s, transform .15s; white-space: nowrap;
+      cursor: pointer;
+    }
+    .nav-cta:hover { background: var(--blue-mid); transform: translateY(-1px); }
+
+    /* Mobile nav */
+    .nav-hamburger {
+      display: none;
+      flex-direction: column; gap: 5px;
+      cursor: pointer; padding: 4px; background: none; border: none;
+    }
+    .nav-hamburger span {
+      width: 22px; height: 2px; background: var(--off-black);
+      border-radius: 2px; transition: all 0.3s;
+      display: block;
+    }
+    .nav-mobile-menu {
+      display: none;
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255,255,255,0.98);
+      z-index: 200; flex-direction: column;
+      align-items: center; justify-content: center; gap: 2rem;
+    }
+    .nav-mobile-menu.open { display: flex; }
+    .nav-mobile-close {
+      position: absolute; top: 1.2rem; right: 4%;
+      font-size: 1.6rem; cursor: pointer; color: var(--off-black);
+      background: none; border: none; font-family: inherit;
+    }
+    .nav-mobile-menu a {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem; color: var(--off-black);
+      font-weight: 500; transition: color .2s;
+    }
+    .nav-mobile-menu a.active { color: var(--blue); }
+    .nav-mobile-menu a:hover { color: var(--blue); }
+    .nav-mobile-cta {
+      background: var(--blue); color: #fff !important;
+      padding: .7rem 2.5rem; border-radius: 40px;
+      font-size: 1rem !important; font-weight: 700 !important;
+      font-family: 'DM Sans', sans-serif !important;
+    }
+
+    @media(max-width: 800px) {
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+      .nav-auth { display: none; }
+    }
+    @media(max-width: 480px) {
+      .nav-logo { font-size: 1.2rem; }
+      .nav-cta { padding: .4rem .9rem; font-size: .75rem; }
+    }
+
+    /* ══ HERO ══ */
+    .hero {
+      margin-top: 64px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 88vh;
+      position: relative;
+    }
+
+    /* Left: text panel */
+    .hero-text {
+      background: var(--blue);
+      padding: 5rem 5% 4rem;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      position: relative; overflow: hidden;
+    }
+    .hero-text::before {
+      content: '';
+      position: absolute; top: -60px; right: -60px;
+      width: 320px; height: 320px; border-radius: 50%;
+      border: 60px solid rgba(255,255,255,.04);
+      pointer-events: none;
+    }
+    .hero-text::after {
+      content: '';
+      position: absolute; bottom: -80px; left: -40px;
+      width: 280px; height: 280px; border-radius: 50%;
+      border: 50px solid rgba(255,255,255,.03);
+      pointer-events: none;
+    }
+    .hero-eyebrow {
+      font-size: .68rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .16em; color: rgba(255,255,255,.4);
+      margin-bottom: 1.4rem;
+    }
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 4.5vw, 4rem);
+      font-weight: 500; color: #fff; line-height: 1.15;
+      letter-spacing: -.02em; margin-bottom: 1.8rem;
+    }
+    .hero-title em { font-style: italic; color: rgba(255,255,255,.65); }
+    .hero-tagline {
+      font-size: .92rem; color: rgba(255,255,255,.55);
+      font-weight: 300; line-height: 1.7; max-width: 380px;
+      border-top: 1px solid rgba(255,255,255,.12);
+      padding-top: 1.4rem; margin-top: .2rem;
+    }
+
+    /* Right: photo grid */
+    .hero-photos {
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 3px;
+      background: #1a1a2e;
+    }
+    .hero-photo {
+      overflow: hidden; position: relative;
+      background: #1e2842;
+    }
+    .hero-photo:first-child { grid-row: 1 / 3; }
+    .hero-photo img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: transform .6s cubic-bezier(.22,1,.36,1);
+    }
+    .hero-photo:hover img { transform: scale(1.04); }
+
+    .photo-label {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: .7rem .9rem;
+      background: linear-gradient(transparent, rgba(0,0,0,.55));
+      font-size: .6rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .1em; color: rgba(255,255,255,.75);
+    }
+
+    .photo-ph {
+      width: 100%; height: 100%; min-height: 180px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: .4rem;
+      color: rgba(255,255,255,.25); font-size: 2.8rem;
+    }
+    .photo-ph span {
+      font-size: .6rem; letter-spacing: .08em; text-transform: uppercase;
+      font-weight: 600; color: rgba(255,255,255,.2);
+    }
+
+    /* HERO RESPONSIVE */
+    @media(max-width: 860px) {
+      .hero {
+        grid-template-columns: 1fr;
+        min-height: auto;
+      }
+      .hero-text {
+        padding: 3.5rem 6% 3rem;
+        min-height: 55vw;
+        justify-content: center;
+      }
+      .hero-photos {
+        height: 260px;
+        grid-template-rows: 1fr 1fr;
+        grid-template-columns: 1.2fr 1fr;
+      }
+    }
+    @media(max-width: 540px) {
+      .hero { margin-top: 58px; }
+      .hero-text {
+        padding: 2.5rem 5% 2.5rem;
+        min-height: auto;
+      }
+      .hero-title { font-size: clamp(1.9rem, 8vw, 2.6rem); margin-bottom: 1.2rem; }
+      .hero-tagline { font-size: .84rem; }
+      .hero-photos { height: 220px; }
+      .photo-label { font-size: .55rem; padding: .5rem .7rem; }
+    }
+    @media(max-width: 380px) {
+      .hero-photos { height: 180px; }
+      .hero-title { font-size: 1.75rem; }
+    }
+
+    /* ══ STAT STRIP ══ */
+    .stat-strip {
+      background: var(--off-black);
+      display: grid; grid-template-columns: repeat(4, 1fr);
+    }
+    .stat-item {
+      padding: 2rem 1.5rem;
+      border-right: 1px solid rgba(255,255,255,.07);
+      text-align: center;
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem; font-weight: 500; color: #fff;
+      line-height: 1; letter-spacing: -.03em;
+    }
+    .stat-num sup { font-size: 1rem; vertical-align: top; margin-top: .3em; }
+    .stat-label {
+      font-size: .68rem; text-transform: uppercase; letter-spacing: .1em;
+      color: rgba(255,255,255,.35); font-weight: 600; margin-top: .5rem;
+    }
+
+    @media(max-width: 640px) {
+      .stat-strip { grid-template-columns: repeat(2, 1fr); }
+      .stat-item:nth-child(2) { border-right: none; }
+      .stat-item:nth-child(3) { border-top: 1px solid rgba(255,255,255,.07); }
+      .stat-item:nth-child(4) { border-top: 1px solid rgba(255,255,255,.07); }
+    }
+    @media(max-width: 380px) {
+      .stat-item { padding: 1.4rem 1rem; }
+      .stat-num { font-size: 1.8rem; }
+      .stat-label { font-size: .6rem; }
+    }
+
+    /* ══ STORY SECTION ══ */
+    .story {
+      padding: 5rem 4%;
+      background: var(--white);
+    }
+    .story-inner {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 5rem;
+      align-items: start;
+      max-width: 1200px;
+    }
+
+    .story-label-col { position: sticky; top: 100px; }
+    .section-eyebrow {
+      font-size: .65rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: .14em; color: var(--blue); margin-bottom: 1rem;
+    }
+    .section-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 500; line-height: 1.2; color: var(--black);
+      letter-spacing: -.02em; margin-bottom: 1.5rem;
+    }
+    .section-heading em { font-style: italic; color: rgba(10,35,90,.5); }
+    .story-pull {
+      font-size: 1.05rem; font-weight: 300; color: var(--text-muted);
+      line-height: 1.75; border-top: 2px solid var(--blue);
+      padding-top: 1.2rem; margin-top: .2rem;
+    }
+
+    .story-prose p {
+      font-size: .96rem; font-weight: 300; color: var(--text-muted);
+      line-height: 1.85; margin-bottom: 1.5rem;
+    }
+    .story-prose strong { color: var(--off-black); font-weight: 600; }
+
+    .story-img-block {
+      margin: 2rem 0;
+      border-radius: 12px; overflow: hidden;
+      aspect-ratio: 16/9;
+      background: var(--grey-light);
+      position: relative;
+    }
+    .story-img-block img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+    }
+    .story-img-caption {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: .6rem .9rem;
+      background: linear-gradient(transparent, rgba(0,0,0,.5));
+      font-size: .6rem; text-transform: uppercase; letter-spacing: .1em;
+      color: rgba(255,255,255,.8); font-weight: 600;
+    }
+
+    .blockquote {
+      margin: 2rem 0;
+      padding: 1.5rem 1.8rem;
+      background: var(--blue-pale);
+      border-left: 3px solid var(--blue);
+      border-radius: 0 12px 12px 0;
+    }
+    .blockquote p {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem; font-style: italic;
+      color: var(--off-black); margin-bottom: .5rem !important;
+      font-weight: 400; line-height: 1.6;
+    }
+    .blockquote cite {
+      font-size: .72rem; font-weight: 700; color: var(--blue);
+      text-transform: uppercase; letter-spacing: .08em;
+      font-style: normal;
+    }
+
+    @media(max-width: 900px) {
+      .story-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+      .story-label-col { position: static; }
+      .story { padding: 3.5rem 5%; }
+    }
+    @media(max-width: 480px) {
+      .story { padding: 3rem 5%; }
+      .story-pull { font-size: .95rem; }
+      .blockquote { padding: 1.2rem 1.3rem; }
+      .blockquote p { font-size: .98rem; }
+    }
+
+    /* ══ SHOP GALLERY ══ */
+    .gallery {
+      padding: 0 4% 5rem;
+      background: var(--white);
+    }
+    .gallery-head {
+      margin-bottom: 2rem;
+      display: flex; align-items: flex-end;
+      justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+    }
+    .gallery-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 500;
+      color: var(--black); letter-spacing: -.015em;
+    }
+    .gallery-sub {
+      font-size: .82rem; color: var(--text-muted); font-weight: 300;
+    }
+
+    /* Bento-style photo grid */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      grid-template-rows: 280px 220px;
+      gap: 6px;
+    }
+    .g-item {
+      overflow: hidden; border-radius: 10px; position: relative;
+      background: var(--grey-light); cursor: pointer;
+    }
+    .g-item img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: transform .5s cubic-bezier(.22,1,.36,1);
+    }
+    .g-item:hover img { transform: scale(1.06); }
+    .g-label {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 1rem .9rem .7rem;
+      background: linear-gradient(transparent, rgba(0,0,0,.6));
+      font-size: .6rem; text-transform: uppercase; letter-spacing: .1em;
+      color: rgba(255,255,255,.8); font-weight: 700;
+      opacity: 0; transition: opacity .3s;
+    }
+    .g-item:hover .g-label { opacity: 1; }
+
+    .g1 { grid-column: 1 / 6; grid-row: 1 / 3; }
+    .g2 { grid-column: 6 / 9; grid-row: 1 / 2; }
+    .g3 { grid-column: 9 / 13; grid-row: 1 / 2; }
+    .g4 { grid-column: 6 / 10; grid-row: 2 / 3; }
+    .g5 { grid-column: 10 / 13; grid-row: 2 / 3; }
+
+    @media(max-width: 760px) {
+      .gallery { padding: 0 5% 3.5rem; }
+      .gallery-grid {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 180px 180px 180px;
+        gap: 6px;
+      }
+      .g1 { grid-column: 1 / 2; grid-row: 1 / 2; }
+      .g2 { grid-column: 2 / 3; grid-row: 1 / 2; }
+      .g3 { grid-column: 1 / 2; grid-row: 2 / 3; }
+      .g4 { grid-column: 2 / 3; grid-row: 2 / 3; }
+      .g5 { grid-column: 1 / 3; grid-row: 3 / 4; }
+      .g-label { opacity: 1; }
+    }
+    @media(max-width: 480px) {
+      .gallery-grid {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 150px 150px 150px;
+      }
+    }
+    @media(max-width: 360px) {
+      .gallery-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+      }
+      .g1,.g2,.g3,.g4 { grid-column: 1 / 2; grid-row: auto; aspect-ratio: 4/3; }
+      .g5 { grid-column: 1 / 2; grid-row: auto; aspect-ratio: 4/3; }
+    }
+
+    /* ══ LOCATION ══ */
+    .location {
+      background: var(--grey-light);
+      padding: 5rem 4%;
+    }
+    .location-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem; align-items: start;
+    }
+
+    .contact-list { margin-top: 2rem; display: flex; flex-direction: column; gap: .85rem; }
+    .contact-row {
+      display: flex; align-items: flex-start; gap: 1rem;
+      padding: 1.1rem 1.2rem;
+      background: #fff; border-radius: 12px;
+      border: 1px solid var(--grey-mid);
+      transition: box-shadow .2s, transform .2s;
+    }
+    .contact-row:hover { box-shadow: 0 8px 24px rgba(10,35,90,.08); transform: translateY(-2px); }
+    .contact-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: var(--blue); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .95rem; flex-shrink: 0;
+    }
+    .contact-row h4 { font-size: .78rem; font-weight: 700; color: var(--black); margin-bottom: .2rem; }
+    .contact-row p { font-size: .82rem; color: var(--text-muted); font-weight: 300; line-height: 1.6; }
+    .contact-row a { color: var(--blue); font-weight: 500; }
+
+    .map-card {
+      border-radius: 16px; overflow: hidden;
+      background: var(--blue); min-height: 340px;
+      display: flex; flex-direction: column;
+      position: relative;
+    }
+    .map-photo {
+      flex: 1; min-height: 220px; position: relative;
+      background: var(--blue-mid); overflow: hidden;
+    }
+    .map-photo img { width: 100%; height: 100%; object-fit: cover; }
+    .map-photo-ph {
+      display: flex; align-items: center; justify-content: center;
+      height: 100%; font-size: 4rem;
+    }
+    .map-footer {
+      padding: 1.4rem 1.5rem;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .map-addr h3 { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: .25rem; }
+    .map-addr p { font-size: .8rem; color: rgba(255,255,255,.55); font-weight: 300; }
+    .directions-btn {
+      display: inline-flex; align-items: center; gap: .4rem;
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.25);
+      color: #fff; padding: .55rem 1.1rem;
+      border-radius: 40px; font-size: .78rem; font-weight: 600;
+      transition: background .2s; white-space: nowrap;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .directions-btn:hover { background: rgba(255,255,255,.25); }
+
+    @media(max-width: 860px) {
+      .location { padding: 3.5rem 5%; }
+      .location-inner { grid-template-columns: 1fr; gap: 2rem; }
+    }
+    @media(max-width: 480px) {
+      .location { padding: 3rem 5%; }
+      .contact-row { padding: .9rem 1rem; gap: .75rem; }
+      .contact-icon { width: 36px; height: 36px; font-size: .85rem; }
+      .contact-row h4 { font-size: .75rem; }
+      .contact-row p { font-size: .78rem; }
+      .map-footer { padding: 1.1rem 1.2rem; }
+    }
+
+    /* ══ WHY US ══ */
+    .whyus {
+      padding: 5rem 4%;
+      background: var(--off-black);
+    }
+    .whyus-head { margin-bottom: 3rem; }
+    .whyus-head .section-eyebrow { color: rgba(255,255,255,.3); }
+    .whyus-head .section-heading { color: #fff; }
+    .whyus-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1px; background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 16px; overflow: hidden;
+    }
+    .why-item {
+      padding: 2rem 1.6rem;
+      background: var(--off-black);
+      transition: background .25s;
+    }
+    .why-item:hover { background: #191924; }
+    .why-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem; font-weight: 500;
+      color: rgba(255,255,255,.12); margin-bottom: .8rem;
+      line-height: 1;
+    }
+    .why-ico { font-size: 1.4rem; margin-bottom: .7rem; }
+    .why-title { font-size: .95rem; font-weight: 700; color: #fff; margin-bottom: .4rem; }
+    .why-desc { font-size: .8rem; color: rgba(255,255,255,.45); font-weight: 300; line-height: 1.6; }
+
+    @media(max-width: 640px) {
+      .whyus { padding: 3.5rem 5%; }
+      .whyus-head { margin-bottom: 2rem; }
+      .whyus-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media(max-width: 420px) {
+      .whyus-grid { grid-template-columns: 1fr; }
+      .why-item { padding: 1.5rem 1.3rem; }
+    }
+
+    /* ══ FOOTER ══ */
+    footer { background: #080a10; color: rgba(255,255,255,.45); padding: 3rem 4% 1.5rem; }
+    .footer-top {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 2rem; padding-bottom: 2.5rem;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem; font-weight: 600; color: #fff; margin-bottom: .6rem;
+    }
+    .footer-logo span { color: var(--blue); }
+    .footer-desc { font-size: .8rem; line-height: 1.6; font-weight: 300; }
+    .footer-col h4 {
+      font-size: .65rem; text-transform: uppercase; letter-spacing: .1em;
+      color: #fff; font-weight: 700; margin-bottom: 1rem;
+    }
+    .footer-col a {
+      display: block; color: rgba(255,255,255,.4);
+      font-size: .8rem; margin-bottom: .5rem; transition: color .2s;
+    }
+    .footer-col a:hover { color: #fff; }
+    .footer-bottom {
+      padding-top: 1.5rem;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: .7rem; flex-wrap: wrap; gap: .5rem;
+    }
+
+    @media(max-width: 700px) {
+      .footer-top { grid-template-columns: 1fr 1fr; }
+    }
+    @media(max-width: 440px) {
+      footer { padding: 2.5rem 5% 1.5rem; }
+      .footer-top { grid-template-columns: 1fr; gap: 1.5rem; padding-bottom: 1.5rem; }
+      .footer-bottom { flex-direction: column; align-items: flex-start; gap: .3rem; }
+    }
+
+    /* ══ REVEAL ANIMATIONS ══ */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity .65s ease, transform .65s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: .1s; }
+    .reveal-delay-2 { transition-delay: .2s; }
+    .reveal-delay-3 { transition-delay: .3s; }
+    .reveal-left { opacity: 0; transform: translateX(-24px); transition: opacity .65s ease, transform .65s ease; }
+    .reveal-left.visible { opacity: 1; transform: translateX(0); }
+
+    /* Reduce motion on mobile for perf */
+    @media(prefers-reduced-motion: reduce) {
+      .reveal, .reveal-left { transition: none; opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <a href="index.html" class="nav-logo">Volt<span>Edge</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="product.html">Products</a></li>
+    <li><a href="newArrivals.html">New Arrivals</a></li>
+    <li><a href="about.html" class="active">About</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="login.html" class="nav-auth" id="homeAuthLink">Sign in</a>
+    <a href="product.html" class="nav-cta">Shop Now</a>
+    <button class="nav-hamburger" id="hamburgerBtn" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile menu overlay -->
+<div class="nav-mobile-menu" id="mobileMenu">
+  <button class="nav-mobile-close" id="mobileClose" aria-label="Close menu">✕</button>
+  <a href="index.html" onclick="closeMobileMenu()">Home</a>
+  <a href="product.html" onclick="closeMobileMenu()">Products</a>
+  <a href="newArrivals.html" onclick="closeMobileMenu()">New Arrivals</a>
+  <a href="about.html" class="active" onclick="closeMobileMenu()">About</a>
+  <a href="product.html" class="nav-mobile-cta" onclick="closeMobileMenu()">Shop Now</a>
+</div>
+
+<script>
+  if (localStorage.getItem('token')) {
+    const el = document.getElementById('homeAuthLink');
+    const n = localStorage.getItem('userName') || 'Me';
+    el.textContent = 'Hi, ' + n.split(' ')[0];
+    el.href = 'profile.html';
+  }
+  function closeMobileMenu() {
+    document.getElementById('mobileMenu').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('hamburgerBtn').addEventListener('click', () => {
+    document.getElementById('mobileMenu').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  });
+  document.getElementById('mobileClose').addEventListener('click', closeMobileMenu);
+</script>
+
+<!-- ══ HERO ══ -->
+<div class="hero">
+  <div class="hero-text">
+    <div class="hero-eyebrow">Est. Accra, Ghana</div>
+    <h1 class="hero-title">
+      Power meets<br>
+      <em>precision.</em><br>
+      That's VoltEdge.
+    </h1>
+    <p class="hero-tagline">
+      Accra's home for genuine laptops, smartphones and accessories —
+      sourced from authorised distributors, backed by our team.
+    </p>
+  </div>
+
+  <div class="hero-photos">
+    <div class="hero-photo">
+      <img src="images/image.png" alt="VoltEdge storefront"
+        onerror="this.style.display='none'; this.parentElement.querySelector('.photo-ph').style.display='flex';">
+      <div class="photo-ph" style="display:none;"><span>🏪</span><span>Our Storefront</span></div>
+      <div class="photo-label">Our Store — Circle, Accra</div>
+    </div>
+    <div class="hero-photo">
+      <img src="images/homePage5.png" alt="VoltEdge shop interior"
+        onerror="this.style.display='none'; this.parentElement.querySelector('.photo-ph').style.display='flex';">
+      <div class="photo-ph" style="display:none;"><span>🖥️</span><span>Shop Interior</span></div>
+      <div class="photo-label">Product Showroom</div>
+    </div>
+    <div class="hero-photo">
+      <img src="images/homePage3.png" alt="VoltEdge team"
+        onerror="this.style.display='none'; this.parentElement.querySelector('.photo-ph').style.display='flex';">
+      <div class="photo-ph" style="display:none;"><span>👥</span><span>Our Team</span></div>
+      <div class="photo-label">Our Team</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ STAT STRIP ══ -->
+<div class="stat-strip">
+  <div class="stat-item reveal">
+    <div class="stat-num">5<sup>+</sup></div>
+    <div class="stat-label">Years in business</div>
+  </div>
+  <div class="stat-item reveal reveal-delay-1">
+    <div class="stat-num">2K<sup>+</sup></div>
+    <div class="stat-label">Happy customers</div>
+  </div>
+  <div class="stat-item reveal reveal-delay-2">
+    <div class="stat-num">200<sup>+</sup></div>
+    <div class="stat-label">Products stocked</div>
+  </div>
+  <div class="stat-item reveal reveal-delay-3">
+    <div class="stat-num">2<sup>yr</sup></div>
+    <div class="stat-label">Warranty on all devices</div>
+  </div>
+</div>
+
+<!-- ══ OUR STORY ══ -->
+<section class="story">
+  <div class="story-inner">
+    <div class="story-label-col reveal-left">
+      <div class="section-eyebrow">Our Story</div>
+      <h2 class="section-heading">Built on trust.<br><em>Driven by quality.</em></h2>
+      <p class="story-pull">We only stock what we'd use ourselves — every device tested, every deal real.</p>
+    </div>
+
+    <div class="story-prose">
+      <p class="reveal">
+        <strong>VoltEdge</strong> was founded right here in Accra with one mission —
+        give Ghanaians access to premium, <strong>genuine electronics</strong> without the premium attitude
+        or inflated grey-market prices that have plagued the industry for years.
+      </p>
+
+      <div class="story-img-block reveal">
+        <img src="images/homePage5.png" alt="Product display in VoltEdge store"
+          onerror="this.style.display='none'; this.parentElement.style.background='#e8eef8'; this.parentElement.innerHTML += '<div style=\'display:flex;align-items:center;justify-content:center;height:100%;font-size:3rem;color:#a0aec0;\'>🖥️</div>'">
+        <div class="story-img-caption">Product Display — VoltEdge Showroom</div>
+      </div>
+
+      <p class="reveal">
+        We personally vet every device and partner directly with authorised distributors for brands like
+        <strong>Apple, Samsung, Dell, HP</strong> and Anker. Everything we sell is backed by a
+        <strong>2-year warranty</strong> and a 30-day return policy — no fine print, no runaround.
+      </p>
+
+      <div class="blockquote reveal">
+        <p>"We only stock what we'd use ourselves. Every device is tested, every deal is real."</p>
+        <cite>— VoltEdge Team, Accra</cite>
+      </div>
+
+      <p class="reveal">
+        Whether you're a student on a budget, a creative professional, or upgrading your home setup —
+        we carry the right device at the right price, and our team is always on hand to help you choose.
+        Walk in to our Circle store or shop online and get it delivered across Greater Accra.
+      </p>
+
+      <div class="story-img-block reveal">
+        <img src="images/homePage3.png" alt="VoltEdge team serving a customer"
+          onerror="this.style.display='none'; this.parentElement.style.background='#e8eef8'; this.parentElement.innerHTML += '<div style=\'display:flex;align-items:center;justify-content:center;height:100%;font-size:3rem;color:#a0aec0;\'>🤝</div>'">
+        <div class="story-img-caption">Customer Service — The VoltEdge Experience</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PHOTO GALLERY ══ -->
+<div class="gallery">
+  <div class="gallery-head reveal">
+    <div>
+      <div class="section-eyebrow">Inside VoltEdge</div>
+      <h2 class="gallery-title">A look around our store.</h2>
+    </div>
+    <p class="gallery-sub">Circle, Accra — open 7 days a week.</p>
+  </div>
+
+  <div class="gallery-grid">
+    <div class="g-item g1 reveal">
+      <img src="images/image.png" alt="VoltEdge store exterior"
+        onerror="this.style.display='none'; this.parentElement.style.background='linear-gradient(135deg,#0a235a,#1e4ab5)'; this.parentElement.innerHTML += '<div class=\'photo-ph\' style=\'color:rgba(255,255,255,.15);min-height:100%\'><span style=\'font-size:5rem\'>🏪</span><span>Storefront</span></div>'">
+      <div class="g-label">Main Entrance</div>
+    </div>
+    <div class="g-item g2 reveal reveal-delay-1">
+      <img src="images/homePage2.png" alt="Product shelves"
+        onerror="this.style.display='none'; this.parentElement.style.background='#1e2842'; this.parentElement.innerHTML += '<div class=\'photo-ph\' style=\'color:rgba(255,255,255,.15);min-height:100%\'><span>📱</span><span>Display Shelves</span></div>'">
+      <div class="g-label">Display Shelves</div>
+    </div>
+    <div class="g-item g3 reveal reveal-delay-2">
+      <img src="images/homePage4.png" alt="Laptop display"
+        onerror="this.style.display='none'; this.parentElement.style.background='#14203a'; this.parentElement.innerHTML += '<div class=\'photo-ph\' style=\'color:rgba(255,255,255,.15);min-height:100%\'><span>💻</span><span>Laptop Section</span></div>'">
+      <div class="g-label">Laptop Section</div>
+    </div>
+    <div class="g-item g4 reveal reveal-delay-1">
+      <img src="images/homePage5.png" alt="Accessories section"
+        onerror="this.style.display='none'; this.parentElement.style.background='#0d1a35'; this.parentElement.innerHTML += '<div class=\'photo-ph\' style=\'color:rgba(255,255,255,.15);min-height:100%\'><span>🎧</span><span>Accessories</span></div>'">
+      <div class="g-label">Accessories Section</div>
+    </div>
+    <div class="g-item g5 reveal reveal-delay-2">
+      <img src="images/homePage3.png" alt="VoltEdge team"
+        onerror="this.style.display='none'; this.parentElement.style.background='#09152c'; this.parentElement.innerHTML += '<div class=\'photo-ph\' style=\'color:rgba(255,255,255,.15);min-height:100%\'><span>👥</span><span>Our Team</span></div>'">
+      <div class="g-label">Our Team</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ LOCATION ══ -->
+<section class="location">
+  <div class="location-inner">
+    <div class="loc-info">
+      <div class="section-eyebrow reveal">Find us</div>
+      <h2 class="section-heading reveal reveal-delay-1">Visit our<br>store.</h2>
+
+      <div class="contact-list">
+        <div class="contact-row reveal reveal-delay-1">
+          <div class="contact-icon"><i class="fa-solid fa-location-dot"></i></div>
+          <div>
+            <h4>Store Address</h4>
+            <p><strong>Accra — Circle</strong><br>
+            Just after the traffic light, Circle<br>
+            Accra, Greater Accra Region, Ghana</p>
+          </div>
+        </div>
+        <div class="contact-row reveal reveal-delay-2">
+          <div class="contact-icon"><i class="fa-solid fa-clock"></i></div>
+          <div>
+            <h4>Opening Hours</h4>
+            <p>
+              <strong>Mon – Fri:</strong> 8:00 AM – 6:00 PM<br>
+              <strong>Saturday:</strong> 9:00 AM – 5:00 PM<br>
+              <strong>Sunday:</strong> 10:00 AM – 3:00 PM
+            </p>
+          </div>
+        </div>
+        <div class="contact-row reveal reveal-delay-3">
+          <div class="contact-icon"><i class="fa-solid fa-phone"></i></div>
+          <div>
+            <h4>Contact Us</h4>
+            <p>
+              <strong>Phone / WhatsApp:</strong>
+              <a href="tel:+233552717847">+233 55 271 7847</a><br>
+              <strong>Email:</strong>
+              <a href="mailto:Richlordgh20@icloud.com">Richlordgh20@icloud.com</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal reveal-delay-1">
+      <div class="map-card">
+        <div class="map-photo">
+          <img src="images/shop-location.jpg" alt="VoltEdge store location"
+            onerror="this.style.display='none'; this.parentElement.querySelector('.map-photo-ph').style.display='flex';">
+          <div class="map-photo-ph" style="display:none; background:var(--blue-mid);">📍</div>
+        </div>
+        <div class="map-footer">
+          <div class="map-addr">
+            <h3>Circle, Accra</h3>
+            <p>Greater Accra Region, Ghana</p>
+          </div>
+          <a href="https://maps.google.com/?q=Circle,Accra,Ghana" target="_blank" rel="noopener" class="directions-btn">
+            <i class="fa-solid fa-diamond-turn-right"></i> Directions
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ WHY CHOOSE US ══ -->
+<section class="whyus">
+  <div class="whyus-head">
+    <div class="section-eyebrow reveal">Why choose us</div>
+    <h2 class="section-heading reveal reveal-delay-1">Trusted by<br>thousands.</h2>
+  </div>
+  <div class="whyus-grid">
+    <div class="why-item reveal">
+      <div class="why-num">01</div>
+      <div class="why-ico"><i class="fas fa-shield-alt" style="color:#fff;"></i></div>
+      <div class="why-title">100% Genuine Products</div>
+      <div class="why-desc">We source directly from authorised distributors. Every device is authenticated before it hits our shelf.</div>
+    </div>
+    <div class="why-item reveal reveal-delay-1">
+      <div class="why-num">02</div>
+      <div class="why-ico"><i class="fas fa-certificate" style="color:#fff;"></i></div>
+      <div class="why-title">2-Year Warranty</div>
+      <div class="why-desc">All devices covered by our extended warranty — hardware faults fixed, no questions asked.</div>
+    </div>
+    <div class="why-item reveal reveal-delay-2">
+      <div class="why-num">03</div>
+      <div class="why-ico"><i class="fas fa-undo-alt" style="color:#fff;"></i></div>
+      <div class="why-title">30-Day Returns</div>
+      <div class="why-desc">Not happy? Return for a full refund within 30 days. Zero hassle, no restocking fees.</div>
+    </div>
+    <div class="why-item reveal reveal-delay-3">
+      <div class="why-num">04</div>
+      <div class="why-ico"><i class="fas fa-headset" style="color:#fff;"></i></div>
+      <div class="why-title">Expert Support</div>
+      <div class="why-desc">Our team knows every device we sell. Walk in or chat with us online anytime.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-logo">Volt<span>Edge</span></div>
+      <p class="footer-desc">Your trusted source for laptops, phones<br>and accessories. Quality guaranteed.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Shop</h4>
+      <a href="product.html?category=Laptop">Laptops</a>
+      <a href="product.html?category=Smartphone">Smartphones</a>
+      <a href="product.html?category=Accessories">Accessories</a>
+      <a href="product.html">All Products</a>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="about.html">About Us</a>
+      <a href="#">Blog</a>
+      <a href="#">Careers</a>
+      <a href="#">Contact</a>
+    </div>
+    <div class="footer-col">
+      <h4>Support</h4>
+      <a href="#">Help Centre</a>
+      <a href="#">Track Order</a>
+      <a href="#">Returns</a>
+      <a href="#">Warranty</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 VoltEdge Electronics. All rights reserved.</span>
+    <span>Laptops · Phones · Accessories</span>
+  </div>
+</footer>
+
+<script>
+// Progress bar + nav shrink
+const bar = document.getElementById('progress-bar');
+window.addEventListener('scroll', () => {
+  const scrolled = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  bar.style.width = scrolled + '%';
+  document.getElementById('mainNav').style.padding = window.scrollY > 60 ? '0.7rem 4%' : '1rem 4%';
+}, { passive: true });
+
+// Scroll reveal
+const revealObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.07 });
+document.querySelectorAll('.reveal, .reveal-left').forEach(el => revealObserver.observe(el));
+</script>
+</body>
+</html>

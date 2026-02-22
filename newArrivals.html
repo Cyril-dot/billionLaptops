@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>New Arrivals — VoltEdge</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#0a235a;--blue-mid:#1a3a7a;--blue-light:#e8eef8;--blue-pale:#f0f4fc;
+  --black:#000000;--off-black:#0f0f0f;--white:#ffffff;
+  --grey-light:#f5f7fa;--grey-mid:#eaeef2;--text-muted:#3a3a3a;
+  --success:#16a34a;--danger:#dc2626;
+  --shadow-sm:0 1px 4px rgba(10,35,90,.06);
+  --shadow-md:0 6px 24px rgba(10,35,90,.12);
+  --shadow-lg:0 18px 48px rgba(10,35,90,.18);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--grey-light);color:var(--black);overflow-x:hidden;}
+a{text-decoration:none;color:inherit;}
+button{font-family:'DM Sans',sans-serif;cursor:pointer;}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 4%;background:rgba(255,255,255,0.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--grey-mid);transition:padding 0.3s;gap:.5rem;}
+.nav-logo{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:600;color:var(--blue);text-decoration:none;letter-spacing:-0.01em;white-space:nowrap;flex-shrink:0;}
+.nav-logo span{color:var(--black);}
+.nav-links{display:flex;gap:2rem;list-style:none;}
+.nav-links a{text-decoration:none;color:var(--off-black);font-size:0.9rem;font-weight:450;transition:color 0.2s;position:relative;}
+.nav-links a::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:1.5px;background:var(--blue);transition:width 0.2s;}
+.nav-links a:hover{color:var(--blue);}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%;}
+.nav-links a.active{color:var(--blue);}
+.nav-cta{background:var(--blue);color:var(--white);border:none;padding:0.5rem 1.3rem;border-radius:40px;font-size:0.8rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.2s,transform 0.15s;text-decoration:none;white-space:nowrap;flex-shrink:0;}
+.nav-cta:hover{background:var(--blue-mid);transform:translateY(-1px);}
+.nav-right-area{display:flex;align-items:center;gap:.7rem;flex-shrink:0;}
+.nav-cart-btn{position:relative;background:none;border:none;font-size:1.1rem;padding:.4rem;border-radius:8px;transition:background .2s;cursor:pointer;}
+.nav-cart-btn:hover{background:var(--grey-light);}
+.cart-badge{position:absolute;top:-4px;right:-4px;background:var(--blue);color:#fff;width:16px;height:16px;border-radius:50%;font-size:.6rem;display:flex;align-items:center;justify-content:center;font-weight:700;}
+
+/* Hamburger */
+.hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;background:none;border:none;cursor:pointer;padding:.3rem;flex-shrink:0;}
+.hamburger span{display:block;width:22px;height:2px;background:var(--blue);border-radius:2px;transition:all .25s;}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+.mobile-nav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:99;opacity:0;pointer-events:none;transition:opacity .25s;}
+.mobile-nav-overlay.open{opacity:1;pointer-events:all;}
+.mobile-nav-drawer{position:absolute;top:0;right:0;width:min(270px,82vw);height:100%;background:#fff;padding:5rem 1.5rem 2rem;display:flex;flex-direction:column;gap:.3rem;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);box-shadow:-4px 0 24px rgba(0,0,0,.1);}
+.mobile-nav-overlay.open .mobile-nav-drawer{transform:translateX(0);}
+.mobile-nav-drawer a{padding:.6rem .85rem;border-radius:10px;font-size:.92rem;color:var(--off-black);font-weight:500;}
+.mobile-nav-drawer a:hover{background:var(--grey-light);color:var(--blue);}
+
+@media(max-width:800px){
+  .nav-links{display:none;}
+  .hamburger{display:flex;}
+  .mobile-nav-overlay{display:block;}
+}
+
+/* ── PAGE HEADER ── */
+.page-header{
+  margin-top:64px;background:var(--off-black);
+  padding:3rem 4% 2.5rem;color:#fff;position:relative;overflow:hidden;
+}
+.page-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at top right,rgba(26,58,122,.6) 0%,transparent 60%);pointer-events:none;}
+.page-header::after{content:'✦';position:absolute;right:5%;top:50%;transform:translateY(-50%);font-size:8rem;opacity:.04;color:#fff;}
+.breadcrumb{font-size:.75rem;color:rgba(255,255,255,.4);margin-bottom:.8rem;}
+.breadcrumb a{color:rgba(255,255,255,.55);}
+.breadcrumb a:hover{color:#fff;}
+.new-badge-pill{display:inline-block;background:var(--success);color:#fff;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:.25rem .7rem;border-radius:40px;margin-bottom:.8rem;}
+.page-header h1{font-family:'Playfair Display',serif;font-size:clamp(1.6rem,4vw,2.4rem);font-weight:500;}
+.page-header p{color:rgba(255,255,255,.5);margin-top:.4rem;font-size:.9rem;font-weight:300;}
+
+/* ── RECENCY TABS ── */
+.recency-bar{background:#fff;border-bottom:1px solid var(--grey-mid);padding:0 4%;display:flex;gap:0;overflow-x:auto;scrollbar-width:none;}
+.recency-bar::-webkit-scrollbar{display:none;}
+.rtab{padding:.85rem 1.2rem;font-size:.83rem;font-weight:500;color:var(--text-muted);border:none;background:none;border-bottom:2.5px solid transparent;white-space:nowrap;transition:all .2s;cursor:pointer;}
+.rtab:hover{color:var(--blue);}
+.rtab.active{color:var(--blue);border-bottom-color:var(--blue);font-weight:700;}
+
+/* ── CONTENT ── */
+.content{max-width:1200px;margin:0 auto;padding:2rem 4%;}
+.sort-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:.8rem;}
+.sort-bar h2{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:500;}
+.sort-sel{padding:.55rem .9rem;border:1.5px solid var(--grey-mid);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;outline:none;background:#fff;cursor:pointer;}
+.sort-sel:focus{border-color:var(--blue);}
+
+/* ── PRODUCT GRID ── */
+.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.5rem;}
+
+/* ── PRODUCT CARD ── */
+.p-card{background:#fff;border-radius:22px;overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid var(--grey-mid);transition:transform .28s ease,box-shadow .28s ease,border-color .28s;cursor:pointer;display:flex;flex-direction:column;position:relative;}
+.p-card:hover{transform:translateY(-7px);box-shadow:var(--shadow-lg);border-color:rgba(10,35,90,.12);}
+.p-card-img{height:200px;background:var(--grey-light);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.p-card-img img{width:100%;height:100%;object-fit:cover;transition:transform .4s ease;}
+.p-card:hover .p-card-img img{transform:scale(1.07);}
+.img-placeholder{font-size:4rem;}
+.p-card-img-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(10,35,90,.5));padding:.5rem .75rem;}
+.p-card-img-cat{font-size:.6rem;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.9);font-weight:700;}
+.new-pill{position:absolute;top:.7rem;left:.7rem;background:var(--success);color:#fff;font-size:.6rem;font-weight:700;text-transform:uppercase;padding:.22rem .6rem;border-radius:20px;}
+.days-pill{position:absolute;top:.7rem;right:.7rem;background:rgba(10,35,90,.75);color:#fff;font-size:.58rem;font-weight:600;padding:.18rem .5rem;border-radius:4px;backdrop-filter:blur(6px);}
+.p-card-body{padding:1.1rem 1.1rem .5rem;flex:1;display:flex;flex-direction:column;gap:.15rem;}
+.p-card-brand-tag{font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:var(--blue);font-weight:700;margin-bottom:.15rem;}
+.p-card-name{font-size:1rem;font-weight:700;color:var(--black);line-height:1.28;letter-spacing:-.01em;}
+.p-card-date{font-size:.7rem;color:var(--text-muted);margin-top:.3rem;display:flex;align-items:center;gap:.35rem;}
+.p-card-date::before{content:'';display:inline-block;width:6px;height:6px;background:var(--success);border-radius:50%;flex-shrink:0;}
+.p-card-price{font-size:1.2rem;font-weight:700;color:var(--blue);margin-top:auto;padding-top:.5rem;font-variant-numeric:tabular-nums;}
+.p-card-foot{display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.1rem 1.1rem;border-top:1px solid var(--grey-mid);margin-top:.6rem;}
+.detail-lnk{font-size:.78rem;font-weight:600;color:var(--text-muted);transition:color .2s;text-decoration:none;border-bottom:1.5px solid transparent;padding-bottom:1px;}
+.detail-lnk:hover{color:var(--blue);border-bottom-color:var(--blue);}
+.add-btn{background:var(--blue);color:#fff;border:none;padding:.45rem 1.1rem;border-radius:40px;font-size:.78rem;font-weight:600;transition:all .2s;}
+.add-btn:hover{background:var(--blue-mid);transform:translateY(-1px);}
+.add-btn:disabled{background:var(--grey-mid);color:var(--text-muted);cursor:not-allowed;transform:none;}
+
+/* Skeletons */
+.skel{background:#fff;border-radius:22px;overflow:hidden;border:1px solid var(--grey-mid);}
+.skel-img{height:200px;background:linear-gradient(90deg,var(--grey-light) 25%,var(--grey-mid) 50%,var(--grey-light) 75%);background-size:200%;animation:shimmer 1.4s infinite;}
+.skel-line{margin:.8rem 1rem;height:12px;border-radius:4px;background:linear-gradient(90deg,var(--grey-light) 25%,var(--grey-mid) 50%,var(--grey-light) 75%);background-size:200%;animation:shimmer 1.4s infinite;}
+.skel-line.short{width:55%;}
+@keyframes shimmer{from{background-position:200% 0}to{background-position:-200% 0}}
+
+.error-banner{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:.8rem 1.2rem;border-radius:10px;font-size:.83rem;margin-bottom:1.2rem;display:none;}
+.error-banner.show{display:block;}
+.empty{text-align:center;padding:4rem;color:var(--text-muted);grid-column:1/-1;}
+.empty h3{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--black);margin-bottom:.5rem;}
+
+.toast{position:fixed;bottom:1.5rem;left:1rem;right:1rem;background:var(--white);border:1px solid var(--grey-mid);border-radius:60px;padding:.6rem 1.5rem;font-size:.82rem;color:var(--blue);box-shadow:var(--shadow-lg);z-index:200;opacity:0;transform:translateY(20px);transition:opacity .3s,transform .3s;pointer-events:none;text-align:center;}
+.toast.show{opacity:1;transform:translateY(0);}
+.toast strong{color:var(--black);}
+.toast.success{border-left:3px solid var(--success);}
+
+/* ── RESPONSIVE ── */
+@media(min-width:600px){
+  .toast{left:auto;right:1.5rem;max-width:280px;text-align:left;}
+}
+@media(max-width:480px){
+  .product-grid{grid-template-columns:repeat(2,1fr);gap:.8rem;}
+  .content{padding:1.5rem 3%;}
+  .p-card-img{height:150px;}
+  .p-card-body{padding:.8rem .8rem .4rem;}
+  .p-card-name{font-size:.88rem;}
+  .p-card-price{font-size:1rem;}
+  .p-card-foot{padding:.65rem .8rem .85rem;}
+  .img-placeholder{font-size:2.8rem;}
+}
+@media(max-width:340px){
+  .product-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <a href="index.html" class="nav-logo">Volt<span>Edge</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="product.html">Products</a></li>
+    <li><a href="newArrivals.html" class="active">New Arrivals</a></li>
+    <li><a href="index.html#categories">Categories</a></li>
+  </ul>
+  <div class="nav-right-area">
+    <button class="nav-cart-btn" id="cartBtn" title="Cart">
+      <i class="fas fa-shopping-cart" style="color:var(--blue);font-size:1rem;"></i>
+      <span class="cart-badge" id="cartBadge">0</span>
+    </button>
+    <div id="navAuthArea"></div>
+    <a href="product.html" class="nav-cta">Shop Now</a>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<!-- Mobile nav -->
+<div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="closeMobileNav(event)">
+  <div class="mobile-nav-drawer">
+    <a href="index.html">Home</a>
+    <a href="product.html">Products</a>
+    <a href="newArrivals.html" style="color:var(--blue);font-weight:600;">New Arrivals</a>
+    <a href="index.html#categories">Categories</a>
+    <a href="product.html" style="margin-top:.5rem;background:var(--blue);color:#fff;border-radius:40px;text-align:center;padding:.65rem;">Shop Now</a>
+  </div>
+</div>
+
+<script>
+(function(){
+  const el=document.getElementById('navAuthArea');
+  if(localStorage.getItem('token')){const n=localStorage.getItem('userName')||'Me';el.innerHTML=`<a href="profile.html" style="font-size:.8rem;color:var(--blue);font-weight:500;text-decoration:none;white-space:nowrap;">Hi, ${n.split(' ')[0]}</a>`;}
+  else{el.innerHTML=`<a href="login.html" style="font-size:.8rem;color:var(--blue);font-weight:500;text-decoration:none;white-space:nowrap;">Sign in</a>`;}
+})();
+window.addEventListener('scroll',()=>{document.getElementById('mainNav').style.padding=window.scrollY>40?'0.7rem 4%':'1rem 4%';});
+const ham=document.getElementById('hamburger');
+const mno=document.getElementById('mobileNavOverlay');
+ham.addEventListener('click',()=>{const o=mno.classList.toggle('open');ham.classList.toggle('open',o);});
+function closeMobileNav(e){if(e.target===mno){mno.classList.remove('open');ham.classList.remove('open');}}
+</script>
+
+<div class="page-header">
+  <div class="breadcrumb"><a href="index.html">Home</a> / New Arrivals</div>
+  <span class="new-badge-pill">Just In</span>
+  <h1>New Arrivals</h1>
+  <p>The latest laptops, phones &amp; accessories — sorted by when they arrived.</p>
+</div>
+
+<div class="recency-bar">
+  <button class="rtab active" data-days="0">All New</button>
+  <button class="rtab" data-days="7">Last 7 days</button>
+  <button class="rtab" data-days="30">Last 30 days</button>
+  <button class="rtab" data-days="90">Last 3 months</button>
+</div>
+
+<div class="content">
+  <div id="errorBanner" class="error-banner"></div>
+  <div class="sort-bar">
+    <h2 id="countLabel">Loading…</h2>
+    <select class="sort-sel" id="sortSel">
+      <option value="newest">Newest First</option>
+      <option value="oldest">Oldest First</option>
+      <option value="price-asc">Price ↑</option>
+      <option value="price-desc">Price ↓</option>
+      <option value="name-asc">A → Z</option>
+    </select>
+  </div>
+  <div class="product-grid" id="productGrid">
+    <div class="skel"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line short"></div></div>
+    <div class="skel"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line short"></div></div>
+    <div class="skel"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line short"></div></div>
+    <div class="skel"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line short"></div></div>
+    <div class="skel"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line short"></div></div>
+    <div class="skel"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line short"></div></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API_BASE='http://localhost:8080/api/v1';
+const CAT_EMOJI={Laptop:'💻',Smartphone:'📱',Accessories:'🎧'};
+const Auth={
+  token:()=>localStorage.getItem('token'),
+  isLoggedIn:()=>!!localStorage.getItem('token'),
+  headers:()=>{const h={'Content-Type':'application/json'};const t=localStorage.getItem('token');if(t)h['Authorization']=`Bearer ${t}`;return h;},
+};
+let toastTimer;
+function showToast(msg,type=''){const t=document.getElementById('toast');t.innerHTML=msg;t.className='toast show'+(type?' '+type:'');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3000);}
+async function refreshCartCount(){if(!Auth.isLoggedIn())return;try{const c=await fetch(API_BASE+'/cart/count',{headers:Auth.headers()}).then(r=>r.json());document.getElementById('cartBadge').textContent=c||0;}catch{}}
+refreshCartCount();
+document.getElementById('cartBtn').addEventListener('click',()=>{window.location.href=Auth.isLoggedIn()?'cart.html':'login.html?redirect=newArrivals.html';});
+let allProducts=[],filterDays=0,sortMode='newest';
+
+async function load(){
+  showSkeletons();
+  try{
+    const res=await fetch(`${API_BASE}/products`,{headers:{'Content-Type':'application/json'}});
+    if(!res.ok)throw new Error(`Server ${res.status}`);
+    const data=await res.json();
+    const list=Array.isArray(data)?data:(data.products||data.content||[]);
+    if(!list.length)throw new Error('empty');
+    const withDates=list.filter(p=>p.createdAt).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+    const noDates=list.filter(p=>!p.createdAt);
+    allProducts=[...withDates,...noDates];
+    document.getElementById('errorBanner').classList.remove('show');
+  }catch(err){
+    const msg=err.message==='empty'?'No products in the database yet.':'Could not reach server — showing demo products.';
+    document.getElementById('errorBanner').textContent='⚠️ '+msg;
+    document.getElementById('errorBanner').classList.add('show');
+    allProducts=getDemoProducts();
+  }
+  render();
+}
+function getFiltered(){
+  let list=[...allProducts];
+  if(filterDays>0){const cutoff=new Date();cutoff.setDate(cutoff.getDate()-filterDays);list=list.filter(p=>p.createdAt&&new Date(p.createdAt)>=cutoff);}
+  if(sortMode==='newest')list.sort((a,b)=>new Date(b.createdAt||0)-new Date(a.createdAt||0));
+  else if(sortMode==='oldest')list.sort((a,b)=>new Date(a.createdAt||0)-new Date(b.createdAt||0));
+  else if(sortMode==='price-asc')list.sort((a,b)=>a.price-b.price);
+  else if(sortMode==='price-desc')list.sort((a,b)=>b.price-a.price);
+  else if(sortMode==='name-asc')list.sort((a,b)=>a.name.localeCompare(b.name));
+  return list;
+}
+function render(){
+  const list=getFiltered();
+  const lbl=filterDays>0?` in the last ${filterDays} days`:'';
+  document.getElementById('countLabel').textContent=`${list.length} product${list.length!==1?'s':''}${lbl}`;
+  const grid=document.getElementById('productGrid');grid.innerHTML='';
+  if(!list.length){grid.innerHTML=`<div class="empty"><h3>No products found</h3><p>${filterDays>0?`No new arrivals in the last ${filterDays} days.`:'No products available.'}</p></div>`;return;}
+  list.forEach(p=>grid.appendChild(makeCard(p)));
+}
+function makeCard(p){
+  const emoji=CAT_EMOJI[p.category]||'📦';
+  const inStock=(p.stock??0)>0;
+  let daysAgo=null,dateStr='';
+  if(p.createdAt){const created=new Date(p.createdAt);const now=new Date();daysAgo=Math.floor((now-created)/(1000*60*60*24));dateStr=created.toLocaleDateString('en-GH',{day:'numeric',month:'short',year:'numeric'});}
+  let daysBadge='';
+  if(daysAgo!==null){if(daysAgo===0)daysBadge='Today';else if(daysAgo===1)daysBadge='Yesterday';else if(daysAgo<7)daysBadge=`${daysAgo}d ago`;else if(daysAgo<30)daysBadge=`${Math.floor(daysAgo/7)}w ago`;else daysBadge=`${Math.floor(daysAgo/30)}mo ago`;}
+  const primaryImg=(p.imageUrls&&p.imageUrls.length>0)?p.imageUrls[0]:(p.imageUrl||null);
+  const priceStr=parseFloat(p.price).toLocaleString('en-GH',{minimumFractionDigits:2});
+  const card=document.createElement('div');card.className='p-card';
+  card.innerHTML=`
+    <div class="p-card-img">
+      ${primaryImg?`<img src="${primaryImg}" alt="${p.name}" loading="lazy">`:`<span class="img-placeholder">${emoji}</span>`}
+      <span class="new-pill">New</span>
+      ${daysBadge?`<span class="days-pill">${daysBadge}</span>`:''}
+      <div class="p-card-img-overlay"><div class="p-card-img-cat">${p.category||''}</div></div>
+    </div>
+    <div class="p-card-body">
+      <div class="p-card-brand-tag">${p.brand||p.category||''}</div>
+      <div class="p-card-name">${p.name}</div>
+      ${dateStr?`<div class="p-card-date">Added ${dateStr}</div>`:''}
+      <div class="p-card-price">₵${priceStr}</div>
+    </div>
+    <div class="p-card-foot">
+      <span class="detail-lnk">View details →</span>
+      <button class="add-btn" ${!inStock?'disabled':''}>+ Cart</button>
+    </div>`;
+  const goDetail=()=>window.location.href=`product-detail.html?id=${p.id}`;
+  card.querySelector('.p-card-img').onclick=goDetail;
+  card.querySelector('.p-card-body').onclick=goDetail;
+  card.querySelector('.detail-lnk').onclick=e=>{e.stopPropagation();goDetail();};
+  card.querySelector('.add-btn')?.addEventListener('click',e=>{
+    e.stopPropagation();
+    if(!Auth.isLoggedIn()){window.location.href=`login.html?redirect=newArrivals.html`;return;}
+    fetch(API_BASE+'/cart',{method:'POST',headers:Auth.headers(),body:JSON.stringify({productId:p.id,quantity:1})}).catch(()=>{});
+    showToast(`✓ <strong>${p.name}</strong> added to cart`,'success');
+    const b=document.getElementById('cartBadge');b.textContent=parseInt(b.textContent||0)+1;
+  });
+  return card;
+}
+function showSkeletons(){document.getElementById('productGrid').innerHTML=Array(6).fill(`<div class="skel"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line short"></div></div>`).join('');}
+function getDemoProducts(){const now=new Date();const daysBack=(d)=>new Date(now.getTime()-d*24*60*60*1000).toISOString();return[{id:1,name:'HP EliteBook 1030 G3',category:'Laptop',brand:'HP',price:4500,stock:6,imageUrl:'images/laptopImage1.png',createdAt:daysBack(1)},{id:2,name:'HP EliteBook 840 G5',category:'Laptop',brand:'HP',price:3500,stock:12,imageUrl:'images/laptopImage2.png',createdAt:daysBack(2)},{id:3,name:'Dell XPS 15',category:'Laptop',brand:'Dell',price:5200,stock:5,imageUrl:'images/laptopImage3.png',createdAt:daysBack(5)},{id:4,name:'AirPods Pro 2',category:'Accessories',brand:'Apple',price:500,stock:25,imageUrl:'images/laptopImage4.png',createdAt:daysBack(7)},{id:5,name:'Samsung Galaxy S25 Ultra',category:'Smartphone',brand:'Samsung',price:20500,stock:9,imageUrl:'images/laptopImage5.png',createdAt:daysBack(12)},{id:6,name:'Anker 100W GaN Charger',category:'Accessories',brand:'Anker',price:390,stock:40,imageUrl:'',createdAt:daysBack(20)}];}
+document.getElementById('sortSel').addEventListener('change',e=>{sortMode=e.target.value;render();});
+document.querySelectorAll('.rtab').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.rtab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');filterDays=parseInt(btn.dataset.days);render();});});
+load();
+</script>
+</body>
+</html>
