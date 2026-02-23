@@ -311,8 +311,8 @@ function closeMobileNav(e){if(e.target===mno){mno.classList.remove('open');ham.c
 <div class="toast" id="toast"></div>
 
 <script>
-const API_BASE='http://localhost:8080/api/v1';
-const WS_URL='http://localhost:8080/ws/chat';
+const API_BASE='https://billionbackend.onrender.com/api/v1';
+const WS_URL='https://billionbackend.onrender.com/ws/chat';
 const Auth={token:()=>localStorage.getItem('token'),userId:()=>localStorage.getItem('userId'),isLoggedIn:()=>!!localStorage.getItem('token'),headers:()=>{const h={'Content-Type':'application/json'};const t=localStorage.getItem('token');if(t)h['Authorization']=`Bearer ${t}`;return h;},logout:()=>{['token','userId','role','userName'].forEach(k=>localStorage.removeItem(k));window.location.reload();}};
 let toastTimer;
 function showToast(msg,type=''){const t=document.getElementById('toast');t.innerHTML=msg;t.className='toast show'+(type?' '+type:'');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3200);}

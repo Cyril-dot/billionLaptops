@@ -218,7 +218,7 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; a
 </div>
 
 <script>
-const API_BASE = 'http://localhost:8080/api/v1';
+const API_BASE = 'https://billionbackend.onrender.com/api/v1';
 if (localStorage.getItem('token') && localStorage.getItem('role') === 'USER') window.location.href = 'product.html';
 
 document.getElementById('submitBtn').addEventListener('click', async () => {
